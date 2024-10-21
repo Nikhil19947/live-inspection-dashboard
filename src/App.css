@@ -1,5 +1,6 @@
 .App {
   text-align: center;
+
 }
 
 .App-logo {
@@ -35,4 +36,18 @@
   to {
     transform: rotate(360deg);
   }
+}
+/* Styling for the alert box */
+.alert-box {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  background-color: #ff4545;
+  color: white;
+  padding: 10px 0;
+  text-align: center;
+  z-index: 9999;
+  font-weight: bold;
 }

@@ -1,0 +1,295 @@
+/* Reset margins and paddings for a full-page layout */
+body, html {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  box-sizing: border-box;
+  background-color: #f4f5f6;
+}
+
+/* Styling for the Live Inspection header */
+.inspection-header {
+  text-align: center;
+  font-size: 24px;
+  font-weight: bold;
+  padding: 0px;
+  margin-left: 20px;
+  background-color: #ffffff;
+}
+
+.live-inspection-page {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  box-sizing: border-box;
+  background-color: #ffffff;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* Center vertically */
+  padding: 0px;
+  background-color: #ffffff;
+  border-radius: 0;
+  width: 100%;
+}
+
+.factree-section {
+  display: flex;
+  align-items: center;
+}
+
+.factree-logo {
+  display: flex;
+  align-items: center;
+}
+
+.factree-logo img {
+  height: 75px;
+  margin-bottom: 10px;
+}
+
+.fname {
+  font-size: 24px;
+  height: 40px;
+  margin-left: 0px;
+  padding-right: 10px;
+}
+
+/* Combine selectors and buttons in one section */
+.selectors-buttons {
+  display: flex;
+  align-items: center;
+  background-color: #f4f5f6;
+}
+
+.selectors {
+  display: flex;
+  flex-direction: column;
+  margin-right: 20px;
+}
+
+.selectors select {
+  margin-bottom: 10px;
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  width: 250px;
+}
+
+.controls-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.controls-buttons button {
+  padding: 10px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  height: 90px;
+  width: 80px;
+}
+
+.controls-buttons button.check-btn {
+  background-color: #9575cd;
+}
+
+.controls-buttons button.start-btn {
+  background-color: #9575cd;
+}
+
+.controls-buttons button.stop-btn {
+  background-color: #e85858;
+}
+
+/* Align Inspector, Batch ID with Camera Health and PLC Health */
+.controls-section {
+  display: flex;
+  align-items: flex-start;
+  background-color: #f4f5f6;
+}
+
+.status-health {
+  display: flex;
+  flex-direction: column;
+  margin-left: 0px; /* Adjusted to align with selectors */
+}
+
+.status-item {
+  display: flex;
+  flex-direction: row; /* Align items horizontally */
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.status-item select {
+  margin-right: 10px; /* Space between select and health status */
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  width: 250px;
+}
+
+.health-status {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+}
+
+.health-status .status-circle {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background-color: #050605; /* Green circle */
+  border: 2px solid #00cc00;
+  margin-left: 10px;
+}
+
+/* Main inspection area */
+.main-inspection-area {
+  display: flex;
+  gap: 20px;
+  padding: 10px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.camera-feed {
+  flex: 2;
+  background-color: #ffffff;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+}
+
+.camera-header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+}
+
+.camera-display {
+  position: relative;
+}
+
+.camera-display img {
+  width: 100%;
+  border-radius: 10px;
+}
+
+.inspecting-box {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 5px;
+  background-color: rgba(120, 0, 255, 0.7);
+  color: white;
+  font-weight: bold;
+}
+
+.camera-thumbnails {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.camera-thumbnail {
+  background-color: #f0f0f0;
+  padding: 10px;
+  text-align: center;
+  border: 1px solid #ddd;
+}
+
+.side-panel {
+  flex: 1.5;
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  margin-top: -20px;
+}
+
+/* Style for table containers to add scrollbars */
+.table-container {
+  max-height: 135px; /* Adjust the height as needed */
+  padding: 0px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 0px;
+}
+
+/* Style for the headings in the side panel */
+.side-panel h3 {
+  margin-bottom: 0px;
+}
+
+/* Table styles */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+th, td {
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+
+th {
+  background-color: #f4f5f6;
+}
+
+.error {
+  color: red;
+}
+
+.pass {
+  color: green;
+}
+.status-message {
+  margin-top: 10px;
+  padding: 10px;
+  text-align: center;
+  font-weight: bold;
+  border-radius: 5px;
+}
+
+.status-message.accepted {
+  background-color: #d4edda; /* Light green background */
+  color: #155724; /* Dark green text */
+}
+
+.status-message.rejected {
+  background-color: #f8d7da; /* Light red background */
+  color: #721c24; /* Dark red text */
+}
+
+/* New bottom box styles */
+.bottom-box {
+  padding: 10px;
+  margin: 0px;
+  margin-left: 10px;
+  background-color: #e10c0c;
+  text-align: center;
+  border: 1px solid hsl(120, 5%, 96%); /* Add a border to make it look like a box */
+  border-radius: 15px; /* Optional: Add rounded corners */
+  overflow: hidden;
+  width: 640px;
+  height: 50px;
+
+}
+
+.bottom-box p {
+  margin: 0;
+  font-size: 16px;
+  color: #333;
+  text-align: center;
+  padding: 20px;
+}
