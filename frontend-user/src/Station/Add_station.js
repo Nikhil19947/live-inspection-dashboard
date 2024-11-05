@@ -1,12 +1,11 @@
 import React, { useState } from 'react';
-import './Add_part.css';
+import './Add_station.css';
 import axios from 'axios';
 
 const AddUserPage = () => {
     const [formData, setFormData] = useState({
         name : '',
-        type : '',
-        batch : '',
+        location : '',
     });
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
@@ -27,19 +26,18 @@ const AddUserPage = () => {
         setSuccessMessage('');
 
         try {
-            const response = await axios.post('http://localhost:5000/add_part', formData);
+            const response = await axios.post('http://localhost:5000/add_station', formData);
 
             if (response.status === 201) {
-                setSuccessMessage('Part successfully added!');
+                setSuccessMessage('Station successfully added!');
                 setFormData({
                     name : '',
-                    type : '',
-                    batch : '',
+                    location : '',
                 });
                 setImage(null);
             }
         } catch (error) {
-            setErrorMessage(error.response?.data?.message || 'Part addition failed.');
+            setErrorMessage(error.response?.data?.message || 'Station addition failed.');
         }
     };
 
@@ -60,7 +58,7 @@ const AddUserPage = () => {
                     <div className="col-md-9"> 
                         <div className="p-3 py-5">
                             <div className="d-flex justify-content-between align-items-center mb-3">
-                                <h4 className="text-right">Part Settings</h4>
+                                <h4 className="text-right">Station Settings</h4>
                             </div>
                             <div className="row mt-2">
                                 <div className="col-md-6">
@@ -75,30 +73,16 @@ const AddUserPage = () => {
                                     />
                                 </div>
                                 <div className="col-md-6">
-                                    <label className="labels">Type</label>
+                                    <label className="labels">Location</label>
                                     <input 
                                         type="text" 
                                         className="form-control" 
-                                        placeholder="type" 
-                                        name="type"
-                                        value={formData.type}
+                                        placeholder="location" 
+                                        name="location"
+                                        value={formData.location}
                                         onChange={handleInputChange}
                                     />
                                 </div>
-                            </div>
-                            <div className="row mt-2">
-                                <div className="col-md-6">
-                                    <label className="labels">Batch</label>
-                                    <input 
-                                        type="text" 
-                                        className="form-control" 
-                                        placeholder="batch" 
-                                        name="batch"
-                                        value={formData.batch}
-                                        onChange={handleInputChange}
-                                    />
-                                </div>
-                                
                             </div>
                             <div className="mt-5 text-center">
                                 <button 
@@ -106,7 +90,7 @@ const AddUserPage = () => {
                                     type="button"
                                     onClick={handleFormSubmit}
                                 >
-                                    Save Part
+                                    Save Station
                                 </button>
                             </div>
                             {successMessage && <div className="alert alert-success mt-3">{successMessage}</div>}

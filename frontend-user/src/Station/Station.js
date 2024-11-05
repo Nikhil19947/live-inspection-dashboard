@@ -12,12 +12,13 @@ const InspectionPage = () => {
     const pageRange = 5;
 
     useEffect(() => {
-        fetch('http://localhost:5000/api/parts')
+        fetch('http://localhost:5000/api/station')
             .then(response => response.json())
             .then(data => {
+                console.log(data); // Check the structure of `data`
                 setData(data);
             })
-            .catch(error => console.error('Error fetching parts:', error));
+            .catch(error => console.error('Error fetching station:', error));
     }, []);
 
 
@@ -38,24 +39,26 @@ const InspectionPage = () => {
         return Array.from({ length: end - start + 1 }, (_, index) => start + index);
     };
 
-    const handleDelete = (productId) => {
+    const handleDelete = (stationId) => {
         setshowAlert(true);
-        fetch(`http://localhost:5000/api/parts/${productId}`, {
+        fetch(`http://localhost:5000/api/station/${stationId}`, {
             method: 'DELETE',
         })
-        .then(response => {
-            if (response.ok) {
-                setData(data.filter(item => item.product_id !== productId)); 
-            } else {
-                alert('Failed to delete part');
-            }
-        })
-        .catch(error => console.error('Error deleting part:', error));
-        setTimeout(() => {
-            window.location.reload();
-        }, 2000);
+            .then(response => {
+                if (response.ok) {
+                    setData(data.filter(item => item.station_id !== stationId)); // Update local state
+                    alert('Station deleted successfully');
+                } else {
+                    alert('Failed to delete station');
+                }
+            })
+            .catch(error => console.error('Error deleting station:', error));
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000);
     };
-    
+
+
     return (
         <div style={{ display: 'flex' }}>
             <nav class="navbar bg-body-tertiary fixed-top" style={{ width: '5px' }}>
@@ -97,13 +100,14 @@ const InspectionPage = () => {
                     </div>
                 </div>
             </nav>
+
             <div className="main-content">
                 <div style={{ padding: "20px", marginLeft: '80px', width: 'calc(100% - 220px)' }}>
-                    <h1 className="live-inspection-title" style={{ marginBottom: '30px' }}>Part Management</h1>
+                    <h1 className="live-inspection-title" style={{ marginBottom: '30px' }}>Station Management</h1>
                     {
                     showAlert && (
                         <div class="alert alert-success" role="alert" style={{width:'250px', marginLeft:'555px'}}>
-                            Part Deleted Successfully
+                            Station Deleted Successfully
                         </div>
                     )
                     }
@@ -125,8 +129,8 @@ const InspectionPage = () => {
                                     style={{ marginLeft: '10px', width: '200px', borderRadius: '8px' }}
                                 />
 
-                                <a href="/add_part"><button className="btn btn-primary" style={{ padding: '8px 15px', borderRadius: '8px' }}>
-                                    <i className="fas fa-user-plus" style={{ marginRight: '5px' }}></i> Add New Part
+                                <a href="/add_station"><button className="btn btn-primary" style={{ padding: '8px 15px', borderRadius: '8px' }}>
+                                    <i className="fas fa-user-plus" style={{ marginRight: '5px' }}></i> Add New Station
                                 </button></a>
                             </div>
                         </div>
@@ -136,9 +140,6 @@ const InspectionPage = () => {
                                 <tr>
                                     <th><input type="checkbox" /></th>
                                     <th>Name</th>
-                                    <th>Type</th>
-                                    <th>Batch</th>
-                                    <th>Created At</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -146,15 +147,12 @@ const InspectionPage = () => {
                                 {paginatedData.map((item, index) => (
                                     <tr key={index}>
                                         <td><input type="checkbox" /></td>
-                                        <td>{item.product_name}</td>
-                                        <td>{item.product_type}</td>
-                                        <td>{item.product_batch}</td>
-                                        <td>-</td>
+                                        <td>{item.station_name}</td>
                                         <td>
                                             <button
                                                 className="btn btn-sm"
                                                 title="Delete"
-                                                onClick={() => handleDelete(item.product_id)} 
+                                                onClick={() => handleDelete(item.station_id)} 
                                             >
                                                 <i className="fas fa-trash"></i>
                                             </button>

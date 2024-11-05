@@ -4,8 +4,8 @@ const bcrypt = require('bcryptjs');
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
+const { v4: uuidv4 } = require('uuid');
 
-// Set up express
 const app = express();
 app.use(express.json());
 app.use(cors());
@@ -27,7 +27,6 @@ db.connect((err) => {
   console.log('Connected to MySQL');
 });
 
-// Promisify MySQL Queries
 const query = (sql, params) => {
   return new Promise((resolve, reject) => {
     db.query(sql, params, (err, results) => {
@@ -39,6 +38,7 @@ const query = (sql, params) => {
   });
 };
 
+// Signup route
 app.post('/signup', async (req, res) => {
   const { username, password, first_name, last_name, phoneNumber, role, shift, reportingManager } = req.body;
 
@@ -67,6 +67,7 @@ app.post('/signup', async (req, res) => {
   }
 });
 
+// Login route
 app.post('/login', async (req, res) => {
   const { username, password } = req.body;
 
@@ -94,8 +95,9 @@ app.post('/login', async (req, res) => {
     console.error('Error logging in user:', err);
     res.status(500).json({ message: 'Error logging in user' });
   }
-}); 
+});
 
+// Reset password route
 app.post('/reset-password', async (req, res) => {
   const { email, newPassword } = req.body;
 
@@ -122,7 +124,104 @@ app.post('/reset-password', async (req, res) => {
   }
 });
 
-// Start the server
+// Add product route
+app.post('/add_part', async (req, res) => {
+  const { name, type, batch } = req.body;
+
+  if (!name || !type || !batch) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+
+  const product_id = uuidv4();
+  const is_deleted = false;
+
+  try {
+    const queryText = `
+      INSERT INTO products (product_id, product_name, product_type, product_batch, is_deleted) 
+      VALUES (?, ?, ?, ?, ?)
+    `;
+    await query(queryText, [product_id, name, type, batch, is_deleted]);
+
+    res.status(201).json({ message: 'Product added successfully' });
+  } catch (err) {
+    console.error('Error inserting product:', err);
+    res.status(500).json({ message: 'Error adding product' });
+  }
+});
+
+app.post('/add_station', async (req, res) => {
+  const { name, location } = req.body;
+
+  if (!name || !location) {
+    return res.status(400).json({ message: 'All fields are required' });
+  }
+
+  const station_id = uuidv4();
+  const is_deleted = false;
+
+  try {
+    const queryText = `
+      INSERT INTO station (station_id, station_name, location, is_deleted) 
+      VALUES (?, ?, ?, ?)
+    `;
+    await query(queryText, [station_id, name, location, is_deleted]);
+
+    res.status(201).json({ message: 'Station added successfully' });
+  } catch (err) {
+    console.error('Error inserting station:', err);
+    res.status(500).json({ message: 'Error adding station' });
+  }
+});
+
+
+
+// Route for parts
+app.get('/api/parts', async (req, res) => {
+  try {
+      const [parts] = await db.query('SELECT * FROM products WHERE is_deleted = 0');
+      res.json(parts);
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Error fetching parts data' });
+  }
+});
+
+app.delete('/api/parts/:id', (req, res) => {
+  const partId = req.params.id;    
+  const sql = 'UPDATE products SET is_deleted = 1 WHERE product_id = ?';
+  
+  db.query(sql, [partId], (err, result) => {
+      if (err) {
+          return res.status(500).json({ error: 'Failed to delete part' });
+      }
+      return res.status(200).json({ message: 'Part deleted successfully' });
+  });
+});
+
+app.get('/api/station', async (req, res) => {
+  try {
+      const [parts] = await db.query('SELECT * FROM station WHERE is_deleted = 0');
+      res.json(parts);
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Error fetching station data' });
+  }
+});
+
+app.delete('/api/station/:id', (req, res) => {
+  const stationId = req.params.id;    
+  const sql = 'UPDATE station SET is_deleted = 1 WHERE station_id = ?';
+  
+  db.query(sql, [stationId], (err, result) => {
+      if (err) {
+          return res.status(500).json({ error: 'Failed to delete station' });
+      }
+      return res.status(200).json({ message: 'Station deleted successfully' });
+  });
+});
+
+
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

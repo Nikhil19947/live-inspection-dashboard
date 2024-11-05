@@ -15,6 +15,8 @@ import AdminPage from './Admin/Admin.js'
 import AddUserPage from './Admin/Add_user.js'
 import PartManagementPage from './Part_management/Part_management.js';
 import AddPartPage from './Part_management/Add_part.js'
+import StationPage from './Station/Station.js';
+import AddStationPage from './Station/Add_station.js';
 
 function App() {
   const navigate = useNavigate();
@@ -174,6 +176,8 @@ function MainApp() {
         <Route path="/add_user" element={<AddUserPage/>}/>
         <Route path="/parts" element={<PartManagementPage/>}/>
         <Route path="/add_part" element={<AddPartPage/>}/>
+        <Route path="/station" element={<StationPage/>}/>
+        <Route path="/add_station" element={<AddStationPage/>}/>
       </Routes>
     </Router>
   );
