@@ -1,136 +1,25 @@
-import React, { useState } from "react";
-import GaugeChart from "react-gauge-chart";
+import React, { useState, useEffect } from "react";
 import name from '../assets/FactreeWriting.png'
 import logo from '../assets/FactreeLogo.png'
 import "@fortawesome/fontawesome-free/css/all.min.css";
 
 const InspectionPage = () => {
-    const data = [
-        {
-            user: 'John Doe',
-            email: 'johndoe@gmail.com',
-            role: 'Super Admin',
-            status: 'active',
-        },
-        {
-            user: 'Alice',
-            email: 'alice@gmail.com',
-            role: 'Operator',
-            status: 'inactive',
-        },
-        {
-            user: 'Bob',
-            email: 'bob@gmail.com',
-            role: 'Admin',
-            status: 'active',
-        },
-        {
-            user: 'John Doe',
-            email: 'johndoe@gmail.com',
-            role: 'Super Admin',
-            status: 'active',
-        },
-        {
-            user: 'Alice',
-            email: 'alice@gmail.com',
-            role: 'Operator',
-            status: 'inactive',
-        },
-        {
-            user: 'Bob',
-            email: 'bob@gmail.com',
-            role: 'Admin',
-            status: 'active',
-        },
-        {
-            user: 'John Doe',
-            email: 'johndoe@gmail.com',
-            role: 'Super Admin',
-            status: 'active',
-        },
-        {
-            user: 'Alice',
-            email: 'alice@gmail.com',
-            role: 'Operator',
-            status: 'inactive',
-        },
-        {
-            user: 'Bob',
-            email: 'bob@gmail.com',
-            role: 'Admin',
-            status: 'active',
-        },
-        {
-            user: 'John Doe',
-            email: 'johndoe@gmail.com',
-            role: 'Super Admin',
-            status: 'active',
-        },
-        {
-            user: 'Alice',
-            email: 'alice@gmail.com',
-            role: 'Operator',
-            status: 'inactive',
-        },
-        {
-            user: 'Bob',
-            email: 'bob@gmail.com',
-            role: 'Admin',
-            status: 'active',
-        },
-        {
-            user: 'John Doe',
-            email: 'johndoe@gmail.com',
-            role: 'Super Admin',
-            status: 'active',
-        },
-        {
-            user: 'Alice',
-            email: 'alice@gmail.com',
-            role: 'Operator',
-            status: 'inactive',
-        },
-        {
-            user: 'Bob',
-            email: 'bob@gmail.com',
-            role: 'Admin',
-            status: 'active',
-        },
-        {
-            user: 'John Doe',
-            email: 'johndoe@gmail.com',
-            role: 'Super Admin',
-            status: 'active',
-        },
-        {
-            user: 'Alice',
-            email: 'alice@gmail.com',
-            role: 'Operator',
-            status: 'inactive',
-        },
-        {
-            user: 'Bob',
-            email: 'bob@gmail.com',
-            role: 'Admin',
-            status: 'active',
-        },
-    ];
-
-    const gaugeTexts = [
-        "Wall Thickness",
-        "Melt Temperature",
-        "Cooling Rate",
-        "Blow Pressure",
-        "Parison Control",
-        "Cycle Time",
-        "Melt Flow Index",
-        "Extrusion Speed",
-    ];
-
+    const [data, setData] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
+    const [showAlert, setshowAlert] = useState(false);
     const itemsPerPage = 8;
     const totalPages = Math.ceil(data.length / itemsPerPage);
     const pageRange = 5;
+
+    useEffect(() => {
+        fetch('http://localhost:5000/api/parts')
+            .then(response => response.json())
+            .then(data => {
+                setData(data);
+            })
+            .catch(error => console.error('Error fetching parts:', error));
+    }, []);
+
 
     const handlePageChange = (newPage) => {
         if (newPage > 0 && newPage <= totalPages) {
@@ -149,7 +38,24 @@ const InspectionPage = () => {
         return Array.from({ length: end - start + 1 }, (_, index) => start + index);
     };
 
-
+    const handleDelete = (productId) => {
+        setshowAlert(true);
+        fetch(`http://localhost:5000/api/parts/${productId}`, {
+            method: 'DELETE',
+        })
+        .then(response => {
+            if (response.ok) {
+                setData(data.filter(item => item.product_id !== productId)); 
+            } else {
+                alert('Failed to delete part');
+            }
+        })
+        .catch(error => console.error('Error deleting part:', error));
+        setTimeout(() => {
+            window.location.reload();
+        }, 2000);
+    };
+    
     return (
         <div style={{ display: 'flex' }}>
             <nav class="navbar bg-body-tertiary fixed-top" style={{ width: '5px' }}>
@@ -172,10 +78,10 @@ const InspectionPage = () => {
                                     <a href="/detailed_view" class="btn btn-outline-secondary w-100 mb-3" style={{ borderRadius: '8px' }}>Insights</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/reports" class="btn btn-outline-secondary w-100 mb-3" style={{ borderRadius: '8px' }}>Reports</a>
+                                    <a href="/detailed_view" class="btn btn-outline-secondary w-100 mb-3" style={{ borderRadius: '8px' }}>Reports</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/parts" class="btn btn-outline-secondary w-100 mb-3" style={{ borderRadius: '8px' }}>Part Settings</a>
+                                    <a href="/detailed_view" class="btn btn-outline-secondary w-100 mb-3" style={{ borderRadius: '8px' }}>Part Settings</a>
                                 </li>
                                 <li class="nav-item">
                                     <a href="/admin" class="btn btn-outline-secondary w-100 mb-3" style={{ borderRadius: '8px' }}>User management</a>
@@ -191,44 +97,20 @@ const InspectionPage = () => {
                     </div>
                 </div>
             </nav>
-
             <div className="main-content">
                 <div style={{ padding: "20px", marginLeft: '80px', width: 'calc(100% - 220px)' }}>
-                    <div style={{ width: '100%' }}>
-                        <div className="title">
-                            <p style={{ marginLeft: '15px', marginTop: '-2px' }}>Filters</p>
-                            <div className="dropdown" style={{ marginBottom: '15px' }}>
-                                <i className="fas fa-search search-icon" style={{ marginLeft: '15px' }}></i>
-                                <select className="left-first" style={{ width: '470px', paddingLeft: '30px', height: '60px' }}>
-                                    <option>Search Role</option>
-                                    <option>Super Admin</option>
-                                    <option>Admin</option>
-                                    <option>Operator</option>
-                                </select>
-                            </div>
-                            <div className="dropdown">
-                                <i className="fas fa-search search-icon" style={{ marginLeft: '15px' }}></i>
-                                <select className="left-first" style={{ width: '470px', paddingLeft: '30px', height: '60px' }}>
-                                    <option>Search Plan</option>
-                                    <option>Plan 1</option>
-                                    <option>Plan 2</option>
-                                </select>
-                            </div>
-                            <div className="dropdown">
-                                <i className="fas fa-search search-icon" style={{ marginLeft: '15px' }}></i>
-                                <select className="left-first" style={{ width: '470px', paddingLeft: '30px', height: '60px' }}>
-                                    <option>Search Status</option>
-                                    <option>Active</option>
-                                    <option>Inactive</option>
-                                    <option>Pending</option>
-                                </select>
-                            </div>
+                    <h1 className="live-inspection-title" style={{ marginBottom: '30px' }}>Part Management</h1>
+                    {
+                    showAlert && (
+                        <div class="alert alert-success" role="alert" style={{width:'250px', marginLeft:'555px'}}>
+                            Part Deleted Successfully
                         </div>
-                    </div>
+                    )
+                    }
                     <div className="table-box">
                         <div>
                             <div className="dropdown-container">
-                                <div className="dropdown" style={{ marginLeft: '10px' }}>
+                                <div className="dropdown" style={{ marginLeft: '10px', marginBottom: '30px', marginTop: '10px' }}>
                                     <i className="fas fa-download download-icon"></i>
                                     <select className="right" style={{ width: '110px', paddingLeft: '30px', marginRight: '920px' }}>
                                         <option>Export</option>
@@ -238,30 +120,25 @@ const InspectionPage = () => {
                                 </div>
                                 <input
                                     type="text"
-                                    placeholder="Search User"
+                                    placeholder="Search Product"
                                     className="form-control"
                                     style={{ marginLeft: '10px', width: '200px', borderRadius: '8px' }}
                                 />
 
-                                <a href="/add_user"><button className="btn btn-primary" style={{ padding: '8px 15px', borderRadius: '8px' }}>
-                                    <i className="fas fa-user-plus" style={{ marginRight: '5px' }}></i> Add New User
+                                <a href="/add_part"><button className="btn btn-primary" style={{ padding: '8px 15px', borderRadius: '8px' }}>
+                                    <i className="fas fa-user-plus" style={{ marginRight: '5px' }}></i> Add New Part
                                 </button></a>
                             </div>
                         </div>
 
-                        <table style={{
-                            boxShadow: '0 2px 5px rgba(0, 0, 0, 0.1)',
-                            borderCollapse: 'separate',
-                            overflow: 'hidden',
-                            marginTop: '20px',
-                        }}>
+                        <table>
                             <thead>
                                 <tr>
                                     <th><input type="checkbox" /></th>
-                                    <th>User</th>
-                                    <th>Email</th>
-                                    <th>Role</th>
-                                    <th>Status</th>
+                                    <th>Name</th>
+                                    <th>Type</th>
+                                    <th>Batch</th>
+                                    <th>Created At</th>
                                     <th>Action</th>
                                 </tr>
                             </thead>
@@ -269,33 +146,22 @@ const InspectionPage = () => {
                                 {paginatedData.map((item, index) => (
                                     <tr key={index}>
                                         <td><input type="checkbox" /></td>
-                                        <td>{item.user}</td>
-                                        <td>{item.email}</td>
-                                        <td style={{ color: item.role === "Super Admin" ? "red" : item.role === "Admin" ? "purple" : "green", fontWeight: "bold" }}>
-                                            {item.role}
-                                        </td>
-                                        <td style={{ color: item.status === "inactive" ? "grey" : "green", fontWeight: "bold" }}>
-                                            {item.status}
-                                        </td>
+                                        <td>{item.product_name}</td>
+                                        <td>{item.product_type}</td>
+                                        <td>{item.product_batch}</td>
+                                        <td>-</td>
                                         <td>
                                             <button
                                                 className="btn btn-sm"
-                                                style={{ marginRight: '5px' }}
                                                 title="Delete"
+                                                onClick={() => handleDelete(item.product_id)} 
                                             >
                                                 <i className="fas fa-trash"></i>
                                             </button>
-                                            <button
-                                                className="btn btn-sm"
-                                                style={{ marginRight: '5px' }}
-                                                title="View"
-                                            >
+                                            <button className="btn btn-sm" title="View">
                                                 <i className="fas fa-eye"></i>
                                             </button>
-                                            <button
-                                                className="btn btn-sm"
-                                                title="More"
-                                            >
+                                            <button className="btn btn-sm" title="More">
                                                 <i className="fas fa-ellipsis-v"></i>
                                             </button>
                                         </td>

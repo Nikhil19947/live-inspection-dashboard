@@ -1,13 +1,225 @@
-body {
+/* Container for the whole page */
+.container {
+  display: flex;
+  height: 100vh;
+  background-color: #f5f5f5;
+  min-height: 100vh; /* Full height of the viewport */
+  padding: 0;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+}
+body {
+  font-family: 'Roboto', sans-serif;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+/* Left section for login */
+.login-section {
+  flex: 1;
+  background-color: white;
+  padding: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 }
 
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+.logo {
+  display: flex;
+  align-items: centre;
+  margin-bottom: 20px;
+}
+
+.logo img {
+  width: 30px;
+  height: 30px;
+  margin-top: 18px;
+  margin-right: 10px;
+}
+
+h1 {
+  color: #673ab7; /* Factree color */
+  font-family: 'Roboto', sans-serif;
+  font-weight: bold;
+  font-size: 30px;
+}
+
+h2 {
+  color: #101623;
+  font-weight: bold;
+  font-size: 20px;
+  font-family: 'Roboto', sans-serif;
+}
+
+p {
+  color: #757575;
+  margin-bottom: 30px;
+  font-family: 'Roboto', sans-serif;
+  color: #707784;
+}
+
+.input-field {
+  position: relative;
+  margin-bottom: 20px;
+  width: 100%;
+  font-family: 'Roboto', sans-serif;
+
+}
+.input-field input::placeholder {
+  font-family: 'Poppins', sans-serif; 
+  font-size: 14px;
+  color: #888;
+}
+
+.input-field input {
+  width: 100%;
+  padding: 15px;
+  padding-left: 40px;
+  border-radius: 8px;
+  border: 1px solid #e0e0e0;
+  background-color: #f3f3f3;
+}
+
+.input-field i {
+  position: absolute;
+  left: 15px;
+  top: 15px;
+  color: #9e9e9e;
+}
+
+.forgot-password {
+  color: #9c27b0;
+  margin-top: -10px;
+  margin-bottom: 30px;
+  cursor: pointer;
+  font-family: 'Roboto', sans-serif;
+}
+form {
+  width: 100%; /* Make the form take full width */
+  max-width: 300px; /* Limit form width */
+  margin: 0; /* Center form horizontally */
+}
+
+.buttons {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+  flex-direction: row; 
+}
+
+.login-btn {
+  background-color: #9c27b0;
+  color: white;
+  border: none;
+  border-radius: 90px;
+  padding: 10px 30px;
+  width: 48%;
+  cursor: pointer;
+  font-size: 16px;
+  font-family: 'Roboto', sans-serif;
+  white-space: nowrap;
+  text-align: center;
+  display: inline-block;
+  justify-content: center;
+  align-items: center; 
+
+}
+.signup-btn {
+  background-color: white;
+  color: #9c27b0;
+  border: 2px solid #9c27b0;
+  border-radius: 90px;
+  padding: 10px 40px;
+  width: 48%;
+  cursor: pointer;
+  font-size: 16px;
+  margin-left: 80px ;
+  white-space: nowrap;
+  text-align: center;
+  display: flex;
+  align-items: center;
+}
+
+.divider {
+  margin: 30px 0;
+  color: #757575;
+}
+
+.google-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background: none; /* Remove background color */
+  border: none; /* Remove border */
+  padding: 0; /* Remove padding */
+  width: auto; /* Adjust width to the size of the image */
+}
+
+.google-btn img {
+  width: 30px; /* Set the size of the Google logo */
+  height: auto;
+  margin-right: 0; /* Remove margin */
+}
+
+
+.google-btn img {
+  margin-right: 10px;
+}
+
+/* Right section for welcome text and image */
+.welcome-section {
+  flex: 1;
+  background-color: #9a1cb1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: rgb(244, 235, 235);
+  text-align: center;
+  height: 100v;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.welcome-section h2 {
+  font-size: 24px;
+  margin-top: 60px;
+  color:white;
+  font-family: 'Roboto', sans-serif;
+  margin-left: 250px;
+  margin-bottom: -170px;
+
+}
+
+.welcome-section img {
+  max-width: 300px;
+  border-radius: 10px;
+  font-family: 'Roboto', sans-serif;
+  margin-right: 350px;
+}
+
+/* Define the blinking animation */
+@keyframes blink {
+  0%, 100% {
+    background-color: #9c27b0;
+  }
+  50% {
+    background-color: #d500f9; /* A lighter color for the blink */
+  }
+}
+
+/* Hover effect to make the button blink */
+.login-btn:hover {
+  animation: blink 1s infinite; /* Blinks continuously */
+}
+.signup-btn:hover {
+  background-color: #e8dded;  /* Lighter dark effect on hover */
+  color: white;
+}
+/* Optional: Blinking when scrolled into view */
+.blink-on-scroll {
+  animation: blink 1s infinite;
 }

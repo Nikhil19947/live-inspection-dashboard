@@ -5,23 +5,22 @@ import name from '../assets/Factree Writing.png'
 import { v4 as uuidv4 } from 'uuid';
 
 function LiveInspection() {
-  const [cameraFeeds, setCameraFeeds] = useState(Array(6).fill(null)); // Now 6 cameras
+  const [cameraFeeds] = useState(Array(6).fill(null)); // Now 6 cameras
   const [isStreaming, setIsStreaming] = useState(false); // For controlling the webcam stream
   const videoRef = useRef(null);
+  const streamRef = useRef(null); // To store the stream object for later stop
   const [isLoading, setIsLoading] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState('');
   const [uniquePartId, setUniquePartId] = useState('');
-  const [videoSrc, setVideoSrc] = useState(null)
-  const [ImgSrc, setImgSrc] = useState(null);
 
   const thumbnailsRefs = useRef(Array(6).fill(null));
 
   const handleStart = async () => {
     const newUniquePartId = uuidv4();
-    setUniquePartId(newUniquePartId);
-
+    setUniquePartId(newUniquePartId); 
+    
     try {
-      const response = await fetch('http://127.0.0.1:5000/start_process', {
+      const response = await fetch('http://localhost:5000/start_process', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -33,18 +32,36 @@ function LiveInspection() {
       });
       const data = await response.json();
       console.log('Response from backend:', data);
-      setVideoSrc('http://127.0.0.1:5000/video_feed');
-      setIsStreaming(true);
     } catch (error) {
       console.error("Error starting process: ", error);
     } finally {
       setIsLoading(false);
     }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+
+      // Assign the stream to the main video
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+      }
+
+      // Assign the stream to each thumbnail video
+      thumbnailsRefs.current.forEach((ref) => {
+        if (ref) {
+          ref.srcObject = stream;
+        }
+      });
+
+      streamRef.current = stream; // Store the stream so it can be stopped later
+      setIsStreaming(true); // Set streaming to true when the video starts
+    } catch (err) {
+      console.error("Error accessing webcam: ", err);
+    }
   };
 
   const handleStop = async () => {
     try {
-      const response = await fetch('http://127.0.0.1:5000/stop_process', {
+      const response = await fetch('http://localhost:5000/stop_process', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -56,46 +73,21 @@ function LiveInspection() {
       const data = await response.json();
       console.log('Response from backend:', data);
     } catch (error) {
-      console.error("Error stopping process: ", error);
+      console.error("Error starting process: ", error);
     } finally {
       setIsLoading(false);
     }
-    setVideoSrc(null);
-    setIsStreaming(false);
-    setTimeout(() => {
-      window.location.reload();
-  }, 500);
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach(track => track.stop()); // Stop all video tracks
+      streamRef.current = null;
+      setIsStreaming(false); // Set streaming to false when the video stops
+      setIsLoading(false);
+    }
   };
 
-  const handleCheck = async () => {
+  const handleCheck = () => {
     if (isStreaming) {
-      setIsLoading(true); // Show loading state
-    }
-
-    try {
-      const response = await fetch('http://127.0.0.1:5000/saved_images');
-      const data = await response.json();
-      const { image_paths } = data;
-
-      // Prepend Flask URL to the image paths
-      const imageUrls = image_paths.map(imgPath =>
-        `http://127.0.0.1:5000/inspection_images/${imgPath.split('\\').pop()}`
-      );
-
-      // Use a for loop to update cameraFeeds with consecutive sets of 6 images
-      const newFeeds = [];
-      for (let i = 0; i < imageUrls.length; i += 6) {
-        // Get the next set of 6 images
-        const setOfImages = imageUrls.slice(i, i + 6);
-        newFeeds.push(...setOfImages);
-      }
-
-      // Update the state with the new set of images
-      setCameraFeeds(newFeeds);
-    } catch (error) {
-      console.error('Error fetching images:', error);
-    } finally {
-      setIsLoading(false); // Hide loading state after images are fetched
+      setIsLoading(true); // Show loading button
     }
   };
 
@@ -107,43 +99,43 @@ function LiveInspection() {
   const [inspections, setInspections] = useState([]);
   const [analytics, setAnalytics] = useState([]);
 
-  //   const fetchDefects = async () => {
-  //     try {
-  //         const response = await fetch('http://localhost:5000/api/defects');
-  //         if (!response.ok) throw new Error("Failed to fetch defects");
-  //         const data = await response.json();
-  //         setDefects(data);
-  //     } catch (error) {
-  //         console.error("Error fetching defects: ", error);
-  //     }
-  // };
+//   const fetchDefects = async () => {
+//     try {
+//         const response = await fetch('http://localhost:5000/api/defects');
+//         if (!response.ok) throw new Error("Failed to fetch defects");
+//         const data = await response.json();
+//         setDefects(data);
+//     } catch (error) {
+//         console.error("Error fetching defects: ", error);
+//     }
+// };
 
 
-  //   const fetchInspections = async () => {
-  //     try {
-  //       const response = await fetch('http://localhost:5000/api/inspections');
-  //       const data = await response.json();
-  //       setInspections(data);
-  //     } catch (error) {
-  //       console.error("Error fetching inspections: ", error);
-  //     }
-  //   };
+//   const fetchInspections = async () => {
+//     try {
+//       const response = await fetch('http://localhost:5000/api/inspections');
+//       const data = await response.json();
+//       setInspections(data);
+//     } catch (error) {
+//       console.error("Error fetching inspections: ", error);
+//     }
+//   };
 
-  //   const fetchAnalytics = async () => {
-  //     try {
-  //       const response = await fetch('http://localhost:5000/api/analytics');
-  //       const data = await response.json();
-  //       setAnalytics(data);
-  //     } catch (error) {
-  //       console.error("Error fetching analytics: ", error);
-  //     }
-  //   };
+//   const fetchAnalytics = async () => {
+//     try {
+//       const response = await fetch('http://localhost:5000/api/analytics');
+//       const data = await response.json();
+//       setAnalytics(data);
+//     } catch (error) {
+//       console.error("Error fetching analytics: ", error);
+//     }
+//   };
 
-  //   useEffect(() => {
-  //     fetchDefects();
-  //     fetchInspections();
-  //     fetchAnalytics();
-  //   }, []);
+//   useEffect(() => {
+//     fetchDefects();
+//     fetchInspections();
+//     fetchAnalytics();
+//   }, []);
 
   return (
     <div className="live-inspection-page">
@@ -229,19 +221,21 @@ function LiveInspection() {
         <div className="camera-feed">
           <strong><span>LIVE</span></strong>
           <div className="camera-header">
-            <img src={videoSrc} style={{ width: '700px', height: '450px' }} />
+            <video ref={videoRef} autoPlay muted style={{ width: '700px', height: '450px' }} />
           </div>
+          {/* <div className="camera-display">
+            <img src={cameraFeeds[0] || '/path/to/placeholder.png'}/>
+          </div> */}
         </div>
 
         <div className="camera-thumbnails">
           {cameraFeeds.map((feed, index) => (
             <div key={index} className="camera-thumbnail">
-              <img src={feed} style={{ width: '131px', marginTop: '10px' }} />
+              <video ref={el => (thumbnailsRefs.current[index] = el)} autoPlay muted style={{ width: '131px', marginTop: '10px' }} />
               <span>Camera {index + 1}</span>
             </div>
           ))}
         </div>
-
         {/* Defect classification, metrology, and summary section */}
         <div className="side-panel">
           {/* Defect classification table */}
@@ -351,7 +345,7 @@ function LiveInspection() {
             <p>INSPECTION IN PROGRESS</p>
           </div>
           <div className="bottom-box-new">
-            <p style={{ fontSize: '15px', marginTop: '12px' }}>ACCEPTED/REJECTED</p>
+            <p style={{fontSize:'15px', marginTop:'12px'}}>ACCEPTED/REJECTED</p>
           </div>
         </div>
         <div className="additional-box">
