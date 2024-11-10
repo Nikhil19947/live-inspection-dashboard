@@ -5,19 +5,19 @@ import name from '../assets/Factree Writing.png'
 import { v4 as uuidv4 } from 'uuid';
 
 function LiveInspection() {
-  const [cameraFeeds, setCameraFeeds] = useState(Array(6).fill(null)); // Now 6 cameras
-  const [isStreaming, setIsStreaming] = useState(false); // For controlling the webcam stream
-  const videoRef = useRef(null);
+  const [cameraFeeds, setCameraFeeds] = useState(Array(6).fill(null)); 
+  const [isStreaming, setIsStreaming] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState('');
   const [uniquePartId, setUniquePartId] = useState('');
   const [videoSrc, setVideoSrc] = useState(null)
-  const [ImgSrc, setImgSrc] = useState(null);
+  const [defects, setDefects] = useState([]);
+  const [summary, setSummary] = useState([]);
 
   const thumbnailsRefs = useRef(Array(6).fill(null));
 
   const handleStart = async () => {
-    const newUniquePartId = uuidv4();
+    const newUniquePartId = uuidv4();  // Generate a new unique part ID
     setUniquePartId(newUniquePartId);
 
     try {
@@ -33,7 +33,9 @@ function LiveInspection() {
       });
       const data = await response.json();
       console.log('Response from backend:', data);
-      setVideoSrc('http://127.0.0.1:5000/video_feed');
+
+      // Set video source with the part_id included in the URL
+      setVideoSrc(`http://127.0.0.1:5000/video_feed?part_id=${newUniquePartId}`);
       setIsStreaming(true);
     } catch (error) {
       console.error("Error starting process: ", error);
@@ -41,6 +43,7 @@ function LiveInspection() {
       setIsLoading(false);
     }
   };
+
 
   const handleStop = async () => {
     try {
@@ -52,20 +55,24 @@ function LiveInspection() {
         body: JSON.stringify({
           part_id: uniquePartId,
         }),
+        mode: 'no-cors' 
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
       const data = await response.json();
       console.log('Response from backend:', data);
     } catch (error) {
       console.error("Error stopping process: ", error);
     } finally {
       setIsLoading(false);
+      setVideoSrc(null);
+      setIsStreaming(false);
     }
-    setVideoSrc(null);
-    setIsStreaming(false);
-    setTimeout(() => {
-      window.location.reload();
-  }, 500);
   };
+  
 
   const handleCheck = async () => {
     if (isStreaming) {
@@ -73,77 +80,59 @@ function LiveInspection() {
     }
 
     try {
-      const response = await fetch('http://127.0.0.1:5000/saved_images');
+      console.log('Inspect');
+
+      fetch('http://127.0.0.1:5000/inspect_func')
+      
+      // Fetch images based on unique part_id from the Flask API
+      const response = await fetch(`http://127.0.0.1:5000/get_images?part_id=${uniquePartId}`);
       const data = await response.json();
-      const { image_paths } = data;
-
-      // Prepend Flask URL to the image paths
-      const imageUrls = image_paths.map(imgPath =>
-        `http://127.0.0.1:5000/inspection_images/${imgPath.split('\\').pop()}`
-      );
-
-      // Use a for loop to update cameraFeeds with consecutive sets of 6 images
-      const newFeeds = [];
-      for (let i = 0; i < imageUrls.length; i += 6) {
-        // Get the next set of 6 images
-        const setOfImages = imageUrls.slice(i, i + 6);
-        newFeeds.push(...setOfImages);
+  
+      // Check if images are returned successfully
+      if (data.error) {
+        console.error(data.error);
+        setIsLoading(false);
+        return;
       }
+  
+      const { image_urls } = data;
+  
+      // Fetch defects and summary data for the given part_id
+      const res = await fetch(`http://127.0.0.1:6001/api/defects?part_id=${uniquePartId}`);
+      const defects = await res.json();
+      setDefects(defects);
+  
+      const resp = await fetch(`http://127.0.0.1:6001/api/summary?part_id=${uniquePartId}`);
+      const summary = await resp.json();
+      setSummary(summary);
 
-      // Update the state with the new set of images
+      console.log('image update');
+      
+      let newFeeds = [...cameraFeeds];
+      for (let i = 0; i < 6; i++) {
+        if (newFeeds.length >= 6) {
+          newFeeds.shift();
+        }
+        newFeeds.push(image_urls[i]);
+      }
+  
+      // Limit the number of images to 6
+      newFeeds = newFeeds.slice(0, 6);
+  
       setCameraFeeds(newFeeds);
+
+      // Trigger backend to start inspection process
+      await fetch('http://127.0.0.1:5000/start_inspect', {
+        method: 'POST',
+      });
     } catch (error) {
       console.error('Error fetching images:', error);
     } finally {
-      setIsLoading(false); // Hide loading state after images are fetched
+      setIsLoading(false);
     }
   };
 
-  const totalAccepted = Math.floor(Math.random() * 10000);
-  const totalNonAccepted = Math.floor(Math.random() * 5000);
-  const totalInspected = totalAccepted + totalNonAccepted;
-
-  const [defects, setDefects] = useState([]);
-  const [inspections, setInspections] = useState([]);
-  const [analytics, setAnalytics] = useState([]);
-
-  //   const fetchDefects = async () => {
-  //     try {
-  //         const response = await fetch('http://localhost:5000/api/defects');
-  //         if (!response.ok) throw new Error("Failed to fetch defects");
-  //         const data = await response.json();
-  //         setDefects(data);
-  //     } catch (error) {
-  //         console.error("Error fetching defects: ", error);
-  //     }
-  // };
-
-
-  //   const fetchInspections = async () => {
-  //     try {
-  //       const response = await fetch('http://localhost:5000/api/inspections');
-  //       const data = await response.json();
-  //       setInspections(data);
-  //     } catch (error) {
-  //       console.error("Error fetching inspections: ", error);
-  //     }
-  //   };
-
-  //   const fetchAnalytics = async () => {
-  //     try {
-  //       const response = await fetch('http://localhost:5000/api/analytics');
-  //       const data = await response.json();
-  //       setAnalytics(data);
-  //     } catch (error) {
-  //       console.error("Error fetching analytics: ", error);
-  //     }
-  //   };
-
-  //   useEffect(() => {
-  //     fetchDefects();
-  //     fetchInspections();
-  //     fetchAnalytics();
-  //   }, []);
+  
 
   return (
     <div className="live-inspection-page">
@@ -179,19 +168,6 @@ function LiveInspection() {
               <button type="button" className="btn btn-danger" onClick={handleStop}>STOP</button>
             </div>
           </div>
-        </div>
-        {/* Loading Button below the Title */}
-        <div className="loading-buttons">
-          {isLoading ? (
-            <button className="btn btn-primary" type="button" disabled={!isLoading}>
-              <>
-                <span className="spinner-grow spinner-grow-sm" aria-hidden="true"></span>
-                <span role="status">&nbsp;&nbsp;Inspecting...</span>
-              </>
-            </button>
-          ) : (
-            ''
-          )}
         </div>
         {/* Inspector, Batch ID, Camera Health, PLC Health */}
         <div className="controls-section">
@@ -236,11 +212,12 @@ function LiveInspection() {
         <div className="camera-thumbnails">
           {cameraFeeds.map((feed, index) => (
             <div key={index} className="camera-thumbnail">
-              <img src={feed} style={{ width: '131px', marginTop: '10px' }} />
+              <img src={feed} alt={`Camera ${index + 1}`} style={{ width: '131px', marginTop: '10px' }} />
               <span>Camera {index + 1}</span>
             </div>
           ))}
         </div>
+
 
         {/* Defect classification, metrology, and summary section */}
         <div className="side-panel">
@@ -253,30 +230,40 @@ function LiveInspection() {
                 <thead>
                   <tr>
                     <th>Defect</th>
-                    <th>Count</th>
+                    <th>Confidence Score</th>
                     <th>Percentage</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {defects.map((defect, i) => (
-                    <tr key={i}>
-                      <td>{defect.defect_type}</td>
-                      <td>{defect.count}</td>
-                      <td>{defect.percentage}%</td>
+                  {defects.length > 0 ? (
+                    defects.map((defect, i) => {
+                      const defectData = defect.defect_list.split(', ').map(item => {
+                        const [defectType, score] = item.split(' ');
+                        return {
+                          defect_type: defectType,
+                          count: score,
+                          percentage: (parseFloat(score) * 100).toFixed(2)
+                        };
+                      });
+
+                      return defectData.map((def, j) => (
+                        <tr key={`${i}-${j}`}>
+                          <td>{def.defect_type}</td>
+                          <td>{def.count}</td>
+                          <td>{def.percentage}%</td>
+                        </tr>
+                      ));
+                    })
+                  ) : (
+                    <tr>
+                      <td colSpan="3">Loading defects...</td>
                     </tr>
-                  ))}
-                  {/* Add empty rows if less than 3 defects */}
-                  {defects.length < 3 &&
-                    Array.from({ length: 3 - defects.length }).map((_, i) => (
-                      <tr key={`empty-${i}`}>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                      </tr>
-                    ))}
+                  )}
                 </tbody>
               </table>
             </div>
+
+
           </div>
 
 
@@ -294,9 +281,9 @@ function LiveInspection() {
                   </tr>
                 </thead>
                 <tbody>
-                  {[...Array(20)].map((_, i) => (
+                  {['Height', 'Width', 'Dia'].map((parameter, i) => (
                     <tr key={i}>
-                      <td>Parameter {i + 1}</td>
+                      <td>{parameter}</td>
                       <td>{(Math.random() * 100).toFixed(2)} mm</td>
                       <td>50.00 ±2</td>
                       <td className={Math.random() > 0.5 ? 'pass' : 'error'}>
@@ -324,23 +311,24 @@ function LiveInspection() {
                 <tbody>
                   <tr>
                     <td>Total Accepted</td>
-                    <td>{totalAccepted}</td>
-                    <td>{((totalAccepted / (totalAccepted + totalNonAccepted)) * 100).toFixed(2)}%</td>
+                    <td>{summary.totalAccepted}</td>
+                    <td>{((summary.totalAccepted / summary.totalInspected) * 100).toFixed(2)}%</td>
                   </tr>
                   <tr>
                     <td>Total Non Accepted</td>
-                    <td>{totalNonAccepted}</td>
-                    <td>{((totalNonAccepted / (totalAccepted + totalNonAccepted)) * 100).toFixed(2)}%</td>
+                    <td>{summary.totalNonAccepted}</td>
+                    <td>{((summary.totalNonAccepted / summary.totalInspected) * 100).toFixed(2)}%</td>
                   </tr>
                   <tr>
                     <td>Total Inspected</td>
-                    <td>{totalInspected}</td>
+                    <td>{summary.totalInspected}</td>
                     <td>100%</td>
                   </tr>
                 </tbody>
               </table>
             </div>
           </div>
+
 
         </div>
       </div>

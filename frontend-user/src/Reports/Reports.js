@@ -4,408 +4,14 @@ import GaugeChart from "react-gauge-chart";
 import name from '../assets/FactreeWriting.png'
 import logo from '../assets/FactreeLogo.png'
 import "@fortawesome/fontawesome-free/css/all.min.css";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const InspectionPage = () => {
   const data = [
-    {
-      partDescription: "Goldie 3000ml Short Angular Bottle",
-      partNumber: "GB3000LTXRH9823",
-      modelNumber: "IHG79123THX234",
-      operator: "Dhiren K",
-      shift: "A",
-      station: "WS-2",
-      batch: "B-342A",
-      status: "REJECTED",
-      timestamp: "27-Aug-24 05:31:30",
-    },
-    {
-      partDescription: "Goldie 3000ml Short Angular Bottle",
-      partNumber: "GB3000LTXRH9823",
-      modelNumber: "IHG79123THX234",
-      operator: "Dhiren K",
-      shift: "A",
-      station: "WS-2",
-      batch: "B-342A",
-      status: "REJECTED",
-      timestamp: "27-Aug-24 05:31:30",
-    },
-    {
-      partDescription: "Goldie 3000ml Short Angular Bottle",
-      partNumber: "GB3000LTXRH9823",
-      modelNumber: "IHG79123THX234",
-      operator: "Dhiren K",
-      shift: "A",
-      station: "WS-2",
-      batch: "B-342A",
-      status: "REJECTED",
-      timestamp: "27-Aug-24 05:31:30",
-    },
-    {
-      partDescription: "Goldie 3000ml Short Angular Bottle",
-      partNumber: "GB3000LTXRH9823",
-      modelNumber: "IHG79123THX234",
-      operator: "Dhiren K",
-      shift: "A",
-      station: "WS-2",
-      batch: "B-342A",
-      status: "REJECTED",
-      timestamp: "27-Aug-24 05:31:30",
-    },
-    {
-      partDescription: "Goldie 3000ml Short Angular Bottle",
-      partNumber: "GB3000LTXRH9823",
-      modelNumber: "IHG79123THX234",
-      operator: "Dhiren K",
-      shift: "A",
-      station: "WS-2",
-      batch: "B-342A",
-      status: "REJECTED",
-      timestamp: "27-Aug-24 05:31:30",
-    },
-    {
-      partDescription: "Goldie 3000ml Short Angular Bottle",
-      partNumber: "GB3000LTXRH9823",
-      modelNumber: "IHG79123THX234",
-      operator: "Dhiren K",
-      shift: "A",
-      station: "WS-2",
-      batch: "B-342A",
-      status: "REJECTED",
-      timestamp: "27-Aug-24 05:31:30",
-    },
-    {
-      partDescription: "Goldie 3000ml Short Angular Bottle",
-      partNumber: "GB3000LTXRH9823",
-      modelNumber: "IHG79123THX234",
-      operator: "Dhiren K",
-      shift: "A",
-      station: "WS-2",
-      batch: "B-342A",
-      status: "REJECTED",
-      timestamp: "27-Aug-24 05:31:30",
-    },
-    {
-      partDescription: "Goldie 3000ml Short Angular Bottle",
-      partNumber: "GB3000LTXRH9823",
-      modelNumber: "IHG79123THX234",
-      operator: "Dhiren K",
-      shift: "A",
-      station: "WS-2",
-      batch: "B-342A",
-      status: "REJECTED",
-      timestamp: "27-Aug-24 05:31:30",
-    },
-    {
-      partDescription: "Goldie 3000ml Short Angular Bottle",
-      partNumber: "GB3000LTXRH9823",
-      modelNumber: "IHG79123THX234",
-      operator: "Dhiren K",
-      shift: "A",
-      station: "WS-2",
-      batch: "B-342A",
-      status: "REJECTED",
-      timestamp: "27-Aug-24 05:31:30",
-    },
-    {
-      partDescription: "Goldie 3000ml Short Angular Bottle",
-      partNumber: "GB3000LTXRH9823",
-      modelNumber: "IHG79123THX234",
-      operator: "Dhiren K",
-      shift: "A",
-      station: "WS-2",
-      batch: "B-342A",
-      status: "REJECTED",
-      timestamp: "27-Aug-24 05:31:30",
-    },
-    {
-      partDescription: "Goldie 3000ml Short Angular Bottle",
-      partNumber: "GB3000LTXRH9823",
-      modelNumber: "IHG79123THX234",
-      operator: "Dhiren K",
-      shift: "A",
-      station: "WS-2",
-      batch: "B-342A",
-      status: "REJECTED",
-      timestamp: "27-Aug-24 05:31:30",
-    },
-    {
-      partDescription: "Goldie 3000ml Short Angular Bottle",
-      partNumber: "GB3000LTXRH9823",
-      modelNumber: "IHG79123THX234",
-      operator: "Dhiren K",
-      shift: "A",
-      station: "WS-2",
-      batch: "B-342A",
-      status: "REJECTED",
-      timestamp: "27-Aug-24 05:31:30",
-    },
-    {
-      partDescription: "Goldie 3000ml Short Angular Bottle",
-      partNumber: "GB3000LTXRH9823",
-      modelNumber: "IHG79123THX234",
-      operator: "Dhiren K",
-      shift: "A",
-      station: "WS-2",
-      batch: "B-342A",
-      status: "REJECTED",
-      timestamp: "27-Aug-24 05:31:30",
-    },
-    {
-      partDescription: "Goldie 3000ml Short Angular Bottle",
-      partNumber: "GB3000LTXRH9823",
-      modelNumber: "IHG79123THX234",
-      operator: "Dhiren K",
-      shift: "A",
-      station: "WS-2",
-      batch: "B-342A",
-      status: "REJECTED",
-      timestamp: "27-Aug-24 05:31:30",
-    },
-    {
-      partDescription: "Goldie 3000ml Short Angular Bottle",
-      partNumber: "GB3000LTXRH9823",
-      modelNumber: "IHG79123THX234",
-      operator: "Dhiren K",
-      shift: "A",
-      station: "WS-2",
-      batch: "B-342A",
-      status: "REJECTED",
-      timestamp: "27-Aug-24 05:31:30",
-    },
-    {
-      partDescription: "Goldie 3000ml Short Angular Bottle",
-      partNumber: "GB3000LTXRH9823",
-      modelNumber: "IHG79123THX234",
-      operator: "Dhiren K",
-      shift: "A",
-      station: "WS-2",
-      batch: "B-342A",
-      status: "REJECTED",
-      timestamp: "27-Aug-24 05:31:30",
-    },
-    {
-      partDescription: "Goldie 3000ml Short Angular Bottle",
-      partNumber: "GB3000LTXRH9823",
-      modelNumber: "IHG79123THX234",
-      operator: "Dhiren K",
-      shift: "A",
-      station: "WS-2",
-      batch: "B-342A",
-      status: "REJECTED",
-      timestamp: "27-Aug-24 05:31:30",
-    },
-    {
-      partDescription: "Goldie 3000ml Short Angular Bottle",
-      partNumber: "GB3000LTXRH9823",
-      modelNumber: "IHG79123THX234",
-      operator: "Dhiren K",
-      shift: "A",
-      station: "WS-2",
-      batch: "B-342A",
-      status: "REJECTED",
-      timestamp: "27-Aug-24 05:31:30",
-    },
-    {
-      partDescription: "Goldie 3000ml Short Angular Bottle",
-      partNumber: "GB3000LTXRH9823",
-      modelNumber: "IHG79123THX234",
-      operator: "Dhiren K",
-      shift: "A",
-      station: "WS-2",
-      batch: "B-342A",
-      status: "REJECTED",
-      timestamp: "27-Aug-24 05:31:30",
-    },
-    {
-      partDescription: "Goldie 3000ml Short Angular Bottle",
-      partNumber: "GB3000LTXRH9823",
-      modelNumber: "IHG79123THX234",
-      operator: "Dhiren K",
-      shift: "A",
-      station: "WS-2",
-      batch: "B-342A",
-      status: "REJECTED",
-      timestamp: "27-Aug-24 05:31:30",
-    },
-    {
-      partDescription: "Goldie 3000ml Short Angular Bottle",
-      partNumber: "GB3000LTXRH9823",
-      modelNumber: "IHG79123THX234",
-      operator: "Dhiren K",
-      shift: "A",
-      station: "WS-2",
-      batch: "B-342A",
-      status: "REJECTED",
-      timestamp: "27-Aug-24 05:31:30",
-    },
-    {
-      partDescription: "Goldie 3000ml Short Angular Bottle",
-      partNumber: "GB3000LTXRH9823",
-      modelNumber: "IHG79123THX234",
-      operator: "Dhiren K",
-      shift: "A",
-      station: "WS-2",
-      batch: "B-342A",
-      status: "REJECTED",
-      timestamp: "27-Aug-24 05:31:30",
-    },
-    {
-      partDescription: "Goldie 3000ml Short Angular Bottle",
-      partNumber: "GB3000LTXRH9823",
-      modelNumber: "IHG79123THX234",
-      operator: "Dhiren K",
-      shift: "A",
-      station: "WS-2",
-      batch: "B-342A",
-      status: "REJECTED",
-      timestamp: "27-Aug-24 05:31:30",
-    },
-    {
-      partDescription: "Goldie 3000ml Short Angular Bottle",
-      partNumber: "GB3000LTXRH9823",
-      modelNumber: "IHG79123THX234",
-      operator: "Dhiren K",
-      shift: "A",
-      station: "WS-2",
-      batch: "B-342A",
-      status: "REJECTED",
-      timestamp: "27-Aug-24 05:31:30",
-    },
-    {
-      partDescription: "Goldie 3000ml Short Angular Bottle",
-      partNumber: "GB3000LTXRH9823",
-      modelNumber: "IHG79123THX234",
-      operator: "Dhiren K",
-      shift: "A",
-      station: "WS-2",
-      batch: "B-342A",
-      status: "REJECTED",
-      timestamp: "27-Aug-24 05:31:30",
-    },
-    {
-      partDescription: "Goldie 3000ml Short Angular Bottle",
-      partNumber: "GB3000LTXRH9823",
-      modelNumber: "IHG79123THX234",
-      operator: "Dhiren K",
-      shift: "A",
-      station: "WS-2",
-      batch: "B-342A",
-      status: "REJECTED",
-      timestamp: "27-Aug-24 05:31:30",
-    },
-    {
-      partDescription: "Goldie 3000ml Short Angular Bottle",
-      partNumber: "GB3000LTXRH9823",
-      modelNumber: "IHG79123THX234",
-      operator: "Dhiren K",
-      shift: "A",
-      station: "WS-2",
-      batch: "B-342A",
-      status: "REJECTED",
-      timestamp: "27-Aug-24 05:31:30",
-    },
-    {
-      partDescription: "Goldie 3000ml Short Angular Bottle",
-      partNumber: "GB3000LTXRH9823",
-      modelNumber: "IHG79123THX234",
-      operator: "Dhiren K",
-      shift: "A",
-      station: "WS-2",
-      batch: "B-342A",
-      status: "REJECTED",
-      timestamp: "27-Aug-24 05:31:30",
-    },
-    {
-      partDescription: "Goldie 3000ml Short Angular Bottle",
-      partNumber: "GB3000LTXRH9823",
-      modelNumber: "IHG79123THX234",
-      operator: "Dhiren K",
-      shift: "A",
-      station: "WS-2",
-      batch: "B-342A",
-      status: "REJECTED",
-      timestamp: "27-Aug-24 05:31:30",
-    },
-    {
-      partDescription: "Goldie 3000ml Short Angular Bottle",
-      partNumber: "GB3000LTXRH9823",
-      modelNumber: "IHG79123THX234",
-      operator: "Dhiren K",
-      shift: "A",
-      station: "WS-2",
-      batch: "B-342A",
-      status: "REJECTED",
-      timestamp: "27-Aug-24 05:31:30",
-    },
-    {
-      partDescription: "Goldie 3000ml Short Angular Bottle",
-      partNumber: "GB3000LTXRH9823",
-      modelNumber: "IHG79123THX234",
-      operator: "Dhiren K",
-      shift: "A",
-      station: "WS-2",
-      batch: "B-342A",
-      status: "REJECTED",
-      timestamp: "27-Aug-24 05:31:30",
-    },
-    {
-      partDescription: "Goldie 3000ml Short Angular Bottle",
-      partNumber: "GB3000LTXRH9823",
-      modelNumber: "IHG79123THX234",
-      operator: "Dhiren K",
-      shift: "A",
-      station: "WS-2",
-      batch: "B-342A",
-      status: "REJECTED",
-      timestamp: "27-Aug-24 05:31:30",
-    },
-    {
-      partDescription: "Goldie 3000ml Short Angular Bottle",
-      partNumber: "GB3000LTXRH9823",
-      modelNumber: "IHG79123THX234",
-      operator: "Dhiren K",
-      shift: "A",
-      station: "WS-2",
-      batch: "B-342A",
-      status: "REJECTED",
-      timestamp: "27-Aug-24 05:31:30",
-    },
-    {
-      partDescription: "Goldie 3000ml Short Angular Bottle",
-      partNumber: "GB3000LTXRH9823",
-      modelNumber: "IHG79123THX234",
-      operator: "Dhiren K",
-      shift: "A",
-      station: "WS-2",
-      batch: "B-342A",
-      status: "REJECTED",
-      timestamp: "27-Aug-24 05:31:30",
-    },
-    {
-      partDescription: "Goldie 3000ml Short Angular Bottle",
-      partNumber: "GB3000LTXRH9823",
-      modelNumber: "IHG79123THX234",
-      operator: "Dhiren K",
-      shift: "A",
-      station: "WS-2",
-      batch: "B-342A",
-      status: "REJECTED",
-      timestamp: "27-Aug-24 05:31:30",
-    },
-    {
-      partDescription: "Goldie 3000ml Short Angular Bottle",
-      partNumber: "GB3000LTXRH9823",
-      modelNumber: "IHG79123THX234",
-      operator: "Dhiren K",
-      shift: "A",
-      station: "WS-2",
-      batch: "B-342A",
-      status: "REJECTED",
-      timestamp: "27-Aug-24 05:31:30",
-    },
-
+    { partDescription: 'Part 1', partNumber: '123', modelNumber: 'A1', operator: 'John', shift: 'Shift 1', station: 'Station 1', batch: 'Batch 1', status: 'ACCEPTED', timestamp: '2024-11-09 12:30', defectType: 'Defect 1' },
+    { partDescription: 'Part 2', partNumber: '124', modelNumber: 'A2', operator: 'Jane', shift: 'Shift 2', station: 'Station 2', batch: 'Batch 2', status: 'REJECTED', timestamp: '2024-11-10 12:45', defectType: 'Defect 2' },
   ];
-
   const gaugeTexts = [
     "Wall Thickness",
     "Melt Temperature",
@@ -418,6 +24,13 @@ const InspectionPage = () => {
   ];
 
   const [currentPage, setCurrentPage] = useState(1);
+  const [stationFilter, setStationFilter] = useState('');
+  const [defectTypeFilter, setDefectTypeFilter] = useState('');
+  const [resultFilter, setResultFilter] = useState('');
+  const [shiftFilter, setShiftFilter] = useState('');
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
+  
   const itemsPerPage = 8;
   const totalPages = Math.ceil(data.length / itemsPerPage);
   const pageRange = 5;
@@ -428,7 +41,30 @@ const InspectionPage = () => {
     }
   };
 
-  const paginatedData = data.slice(
+  const handleStartDateChange = (e) => {
+    setStartDate(e.target.value); // Update start date filter
+  };
+
+  const handleEndDateChange = (e) => {
+    setEndDate(e.target.value); // Update end date filter
+  };
+
+  const filteredData = data.filter((item) => {
+    const itemDate = item.timestamp.split(" ")[0]; // Extract the date part (YYYY-MM-DD)
+    const isWithinDateRange = 
+      (!startDate || itemDate >= startDate) && 
+      (!endDate || itemDate <= endDate);
+
+    return (
+      (stationFilter ? item.station === stationFilter : true) &&
+      (defectTypeFilter ? item.defectType === defectTypeFilter : true) &&
+      (resultFilter ? item.status.toLowerCase() === resultFilter.toLowerCase() : true) &&
+      (shiftFilter ? item.shift === shiftFilter : true) &&
+      isWithinDateRange // Apply date range filter
+    );
+  });
+
+  const paginatedData = filteredData.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
@@ -503,7 +139,7 @@ const InspectionPage = () => {
               <div className="dropdown-container">
                 <div className="dropdown">
                   <i className="fas fa-search search-icon" style={{ marginLeft: '15px' }}></i>
-                  <select className="left-first" style={{ width: '170px', paddingLeft: '30px' }}>
+                  <select className="left-first" style={{ width: '170px', paddingLeft: '30px' }} value={stationFilter} onChange={(e) => setStationFilter(e.target.value)}>
                     <option>Search Station</option>
                     <option>Station 1</option>
                     <option>Station 2</option>
@@ -511,7 +147,7 @@ const InspectionPage = () => {
                 </div>
                 <div className="dropdown">
                   <i className="fas fa-search search-icon"></i>
-                  <select className="left" style={{ width: '210px', paddingLeft: '30px' }}>
+                  <select className="left" style={{ width: '210px', paddingLeft: '30px' }} value={defectTypeFilter} onChange={(e) => setDefectTypeFilter(e.target.value)}>
                     <option>Search Defect Type</option>
                     <option>Defect 1</option>
                     <option>Defect 2</option>
@@ -519,7 +155,7 @@ const InspectionPage = () => {
                 </div>
                 <div className="dropdown">
                   <i className="fas fa-search search-icon"></i>
-                  <select className="left1" style={{ width: '170px', paddingLeft: '30px' }}>
+                  <select className="left1" style={{ width: '170px', paddingLeft: '30px' }} value={resultFilter} onChange={(e) => setResultFilter(e.target.value)}>
                     <option>Search Result</option>
                     <option>Accepted</option>
                     <option>Rejected</option>
@@ -527,23 +163,17 @@ const InspectionPage = () => {
                 </div>
                 <div className="dropdown">
                   <i className="fas fa-search search-icon"></i>
-                  <select className="right" style={{ width: '150px', paddingLeft: '30px' }}>
+                  <select className="right" style={{ width: '150px', paddingLeft: '30px' }} value={shiftFilter} onChange={(e) => setShiftFilter(e.target.value)}>
                     <option>Search Shift</option>
                     <option>Shift 1</option>
                     <option>Shift 2</option>
                   </select>
                 </div>
                 <div className="dropdown">
-                  <i className="fas fa-calendar-alt search-icon" style={{ marginLeft: '2px' }}></i>
-                  <input type="date" className="date-input" style={{ width: '150px', paddingLeft: '30px' }} />
-                </div>
-                <div className="dropdown">
-                  <i className="fas fa-search search-icon"></i>
-                  <select className="right" style={{ width: '180px', paddingLeft: '30px' }}>
-                    <option>Search By Time</option>
-                    <option>Time 1</option>
-                    <option>Time 2</option>
-                  </select>
+                  <i className="fas fa-calendar-alt search-icon" style={{ marginLeft: '15px' }}></i>
+                  <input type="date" value={startDate} onChange={handleStartDateChange} style={{ paddingLeft: '20px' }} />
+                  <span style={{ marginLeft: '10px', marginRight: '10px' }}>to</span>
+                  <input type="date" value={endDate} onChange={handleEndDateChange} style={{ paddingLeft: '20px' }} />
                 </div>
                 <div className="dropdown">
                   <i className="fas fa-download download-icon"></i>

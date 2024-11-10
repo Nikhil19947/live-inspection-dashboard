@@ -2,7 +2,7 @@ require('dotenv').config();
 const mysql = require('mysql2/promise'); // Use the promise version
 const express = require('express');
 const cors = require('cors');
-const PORT = 5000;
+const PORT = 6001;
 
 const app = express();
 app.use(express.json());
@@ -13,45 +13,65 @@ const db = mysql.createPool({
     host: 'localhost',        
     user: 'root',            
     password: 'root_pass813', 
-    database: 'factreeai' 
+    database: 'dummydb' 
 });
 
 // Route for defects
 app.get('/api/defects', async (req, res) => {
-    const sql = `
-        SELECT defects.defect_id, defects.defect_type, defects.severity_level, 
-               inspection_results.feature_name, inspection_results.is_defective,
-               inspections.inspection_timestamp, products.part_name
-        FROM defects
-        JOIN inspection_results ON defects.result_id = inspection_results.result_id
-        JOIN inspections ON inspection_results.inspection_id = inspections.inspection_id
-        JOIN products ON inspections.part_id = products.part_id
-    `;
+    const { part_id } = req.query; // Extract part_id from query parameters
+
+    let sql = 'SELECT * FROM results';
+    let params = [];
+
+    if (part_id) {
+        // If part_id is provided, modify the query to filter based on part_id
+        sql += ' WHERE part_id = ?';
+        params.push(part_id); // Add the part_id to the query params
+    }
+
     try {
-        const [results] = await db.query(sql);
-        res.json(results);
+        const [results] = await db.query(sql, params); // Pass params to avoid SQL injection
+        res.json(results); // Send the filtered results as JSON
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
 });
 
-// Route for inspections
-app.get('/api/inspections', async (req, res) => {
-    const sql = `
-        SELECT inspections.inspection_id, inspections.inspection_timestamp, inspections.result, 
-               products.part_name, camera_table.camera_serial_number, operators.operator_name
-        FROM inspections
-        JOIN products ON inspections.part_id = products.part_id
-        JOIN camera_table ON inspections.camera_id = camera_table.camera_id
-        JOIN operators ON inspections.operator_id = operators.operator_id
+
+  
+
+app.get('/api/summary', async (req, res) => {
+    const { part_id } = req.query; // Extract part_id from query parameters
+
+    let sql = `
+        SELECT 
+            COUNT(*) AS total_count, 
+            SUM(CASE WHEN is_accepted = 1 THEN 1 ELSE 0 END) AS total_accepted,
+            SUM(CASE WHEN is_accepted = 0 THEN 1 ELSE 0 END) AS total_non_accepted
+        FROM results
     `;
+    let params = [];
+
+    if (part_id) {
+        // If part_id is provided, modify the query to filter based on part_id
+        sql += ' WHERE part_id = ?';
+        params.push(part_id); // Add the part_id to the query params
+    }
+
     try {
-        const [results] = await db.query(sql);
-        res.json(results);
+        const [results] = await db.query(sql, params); // Pass params to avoid SQL injection
+        const { total_count, total_accepted, total_non_accepted } = results[0];
+        
+        res.json({
+            totalAccepted: total_accepted,
+            totalNonAccepted: total_non_accepted,
+            totalInspected: total_count
+        }); // Send the counts as JSON
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
 });
+
 
 // Route for analytics
 app.get('/api/analytics', async (req, res) => {
