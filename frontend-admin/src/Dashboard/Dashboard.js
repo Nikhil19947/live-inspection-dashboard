@@ -3,65 +3,77 @@ import './Dashboard.css';
 import logo from '../assets/FactreeLogo.png';
 import name from '../assets/Factree Writing.png'
 import { v4 as uuidv4 } from 'uuid';
+import axios from 'axios';
 
 function LiveInspection() {
-  const [cameraFeeds] = useState(Array(6).fill(null)); // Now 6 cameras
-  const [isStreaming, setIsStreaming] = useState(false); // For controlling the webcam stream
-  const videoRef = useRef(null);
-  const streamRef = useRef(null); // To store the stream object for later stop
+  const [cameraFeeds, setCameraFeeds] = useState(Array(6).fill(null));
+  const [isStreaming, setIsStreaming] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState('');
   const [uniquePartId, setUniquePartId] = useState('');
+  const [videoSrc, setVideoSrc] = useState(null)
+  const [defects, setDefects] = useState([]);
+  const [summary, setSummary] = useState([]);
+  const [imageUrls, setImageUrls] = useState(null);
+  const [progress, setProgress] = useState(33.33);
+  const [accept, setaccept] = useState(false);
+  const [parts, setParts] = useState([]);
+  const [stations, setStations] = useState([]);
+  const [selectedProduct, setSelectedProduct] = useState('');
+  const [selectedStation, setSelectedStation] = useState('')
 
   const thumbnailsRefs = useRef(Array(6).fill(null));
+  useEffect(() => {
+    // Fetch parts data
+    axios.get('http://localhost:5002/api/parts')
+      .then(response => {
+        setParts(response.data); // Assuming response.data contains an array of parts
+      })
+      .catch(error => {
+        console.error('Error fetching parts:', error);
+      });
+
+    // Fetch stations data
+    axios.get('http://localhost:5002/api/station')
+      .then(response => {
+        setStations(response.data); // Assuming response.data contains an array of stations
+      })
+      .catch(error => {
+        console.error('Error fetching stations:', error);
+      });
+  }, []);
 
   const handleStart = async () => {
-    const newUniquePartId = uuidv4();
-    setUniquePartId(newUniquePartId); 
-    
+    const newUniquePartId = uuidv4();  // Generate a new unique part ID
+    setUniquePartId(newUniquePartId);
+  
     try {
-      const response = await fetch('http://localhost:5000/start_process', {
+      const response = await fetch('http://127.0.0.1:5000/start_process', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           part_id: newUniquePartId,
-          part_name: selectedVariant,
+          part_name: selectedProduct,
         }),
       });
       const data = await response.json();
       console.log('Response from backend:', data);
+  
+      // Set video source with part_id, selectedProduct, and selectedStation included in the URL
+      setVideoSrc(`http://127.0.0.1:5000/video_feed?part_id=${newUniquePartId}&part_name=${selectedProduct}&station=${selectedStation}`);
+      setIsStreaming(true);
     } catch (error) {
       console.error("Error starting process: ", error);
-    } finally {
-      setIsLoading(false);
-    }
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-
-      // Assign the stream to the main video
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream;
-      }
-
-      // Assign the stream to each thumbnail video
-      thumbnailsRefs.current.forEach((ref) => {
-        if (ref) {
-          ref.srcObject = stream;
-        }
-      });
-
-      streamRef.current = stream; // Store the stream so it can be stopped later
-      setIsStreaming(true); // Set streaming to true when the video starts
-    } catch (err) {
-      console.error("Error accessing webcam: ", err);
     }
   };
+  
+
 
   const handleStop = async () => {
     try {
-      const response = await fetch('http://localhost:5000/stop_process', {
+      const response = await fetch('http://127.0.0.1:5000/stop_process', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -69,73 +81,135 @@ function LiveInspection() {
         body: JSON.stringify({
           part_id: uniquePartId,
         }),
+        mode: 'no-cors'
       });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
       const data = await response.json();
       console.log('Response from backend:', data);
     } catch (error) {
-      console.error("Error starting process: ", error);
+      console.error("Error stopping process: ", error);
     } finally {
       setIsLoading(false);
+      setVideoSrc(null);
+      setIsStreaming(false);
     }
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach(track => track.stop()); // Stop all video tracks
-      streamRef.current = null;
-      setIsStreaming(false); // Set streaming to false when the video stops
-      setIsLoading(false);
-    }
+    window.location.reload();
   };
 
-  const handleCheck = () => {
+
+  const fetchInspectionData = async () => {
+    try {
+      console.log('Starting inspection process');
+  
+      // Fetch defects data
+      const defectResponse = await fetch(`http://127.0.0.1:5002/api/defects?part_id=${uniquePartId}`);
+      if (!defectResponse.ok) {
+        throw new Error(`Error fetching defects: ${defectResponse.status}`);
+      }
+      const defects = await defectResponse.json();
+      setDefects(defects);
+  
+      // Fetch summary data
+      const summaryResponse = await fetch(`http://127.0.0.1:5002/api/summary?part_id=${uniquePartId}`);
+      if (!summaryResponse.ok) {
+        throw new Error(`Error fetching summary: ${summaryResponse.status}`);
+      }
+
+      const accept = await fetch(`http://127.0.0.1:5002/api/accept?part_id=${uniquePartId}`)
+      if(accept.ok){
+        setaccept(await accept.json());        
+      }
+      
+      
+      const summary = await summaryResponse.json();
+      setSummary(summary);
+  
+      // Fetch latest image URLs
+      const imageResponse = await fetch(`http://127.0.0.1:5000/get_images?part_id=${uniquePartId}`);
+      if (!imageResponse.ok) {
+        throw new Error(`Error fetching images: ${imageResponse.status}`);
+      }
+      const imageData = await imageResponse.json();
+  
+      if (imageData.image_urls && imageData.image_urls.length > 0) {
+        setImageUrls([]); // Reset imageUrls state first
+        setImageUrls(imageData.image_urls); // Update with new image URLs
+      } else {
+        console.error('No images found');
+      }
+  
+      console.log('Inspection data updated successfully');
+    } catch (error) {
+      console.error('Error during inspection process:', error);
+    }
+  };
+  
+  // UseEffect to handle the data fetching when the component is mounted or `isStreaming` changes
+  useEffect(() => {
     if (isStreaming) {
-      setIsLoading(true); // Show loading button
+      const intervalId = setInterval(() => {
+        fetchInspectionData();
+      }, 500); // Polling every 5 seconds (you can adjust the interval)
+  
+      return () => clearInterval(intervalId); // Clear the interval on component unmount
+    }
+  }, [isStreaming, uniquePartId]);
+  
+  const handleStartStreaming = () => {
+    setIsStreaming(true); // Start the polling process
+  };
+  
+  const handleCheck = async () => {
+    setIsLoading(true);
+  
+    setProgress(33.33); 
+    let progressValue = 33.33;
+    const interval = setInterval(() => {
+      if (progressValue >= 100) {
+        clearInterval(interval); // Stop interval once progress is 100%
+      } else {
+        progressValue += 3.33; // Increment progress by 3.33% every 100ms
+        setProgress(progressValue);
+      }
+    }, 80);  
+  
+    try {
+      console.log('Starting inspection process');
+  
+      // Start inspection
+      fetch(`http://127.0.0.1:5000/inspect_func`, {
+        mode: 'no-cors',  // Adjust this as needed based on your CORS policy
+      });
+  
+      console.log('Inspection data updated successfully');
+    } catch (error) {
+      console.error('Error during inspection process:', error);
     }
   };
 
-  const totalAccepted = Math.floor(Math.random() * 10000);
-  const totalNonAccepted = Math.floor(Math.random() * 5000);
-  const totalInspected = totalAccepted + totalNonAccepted;
+  const handleProductChange = (event) => {
+    setSelectedProduct(event.target.value);
+  };
 
-  const [defects, setDefects] = useState([]);
-  const [inspections, setInspections] = useState([]);
-  const [analytics, setAnalytics] = useState([]);
+  const handleStationChange = (event) => {
+    setSelectedStation(event.target.value);
+  };
+  
+  const acceptanceStatus = accept && accept.length > 0 ? accept[0] : null;
+const acceptanceLabel = acceptanceStatus && acceptanceStatus.is_accepted ? 'Accepted' : 'Rejected';
+const statusColor = acceptanceStatus && acceptanceStatus.is_accepted === 1 ? 'green' : 'red';
 
-//   const fetchDefects = async () => {
-//     try {
-//         const response = await fetch('http://localhost:5000/api/defects');
-//         if (!response.ok) throw new Error("Failed to fetch defects");
-//         const data = await response.json();
-//         setDefects(data);
-//     } catch (error) {
-//         console.error("Error fetching defects: ", error);
-//     }
-// };
+if (acceptanceStatus) {
+    console.log('Status--------------------------------------------------', acceptanceStatus.is_accepted);
+} else {
+    console.log('Acceptance status is not available');
+}
 
 
-//   const fetchInspections = async () => {
-//     try {
-//       const response = await fetch('http://localhost:5000/api/inspections');
-//       const data = await response.json();
-//       setInspections(data);
-//     } catch (error) {
-//       console.error("Error fetching inspections: ", error);
-//     }
-//   };
-
-//   const fetchAnalytics = async () => {
-//     try {
-//       const response = await fetch('http://localhost:5000/api/analytics');
-//       const data = await response.json();
-//       setAnalytics(data);
-//     } catch (error) {
-//       console.error("Error fetching analytics: ", error);
-//     }
-//   };
-
-//   useEffect(() => {
-//     fetchDefects();
-//     fetchInspections();
-//     fetchAnalytics();
-//   }, []);
 
   return (
     <div className="live-inspection-page">
@@ -153,16 +227,24 @@ function LiveInspection() {
           {/* Moved Variant and Station Selectors below the logo */}
           <div className="selectors-buttons">
             <div className="selectors">
-              <select>
-                <option>Select Station</option>
-                <option>Station 1</option>
-                <option>Station 2</option>
-              </select>
-              <select onChange={(e) => setSelectedVariant(e.target.value)}>
-                <option>Select Variant</option>
-                <option>Variant 1</option>
-                <option>Variant 2</option>
-              </select>
+            <select value={selectedProduct} onChange={handleProductChange}>
+        <option value="">Select Product</option>
+        {parts.map((part) => (
+          <option key={part.id} value={part.product_name}>
+            {part.product_name}
+          </option>
+        ))}
+      </select>
+
+      {/* Station dropdown */}
+      <select value={selectedStation} onChange={handleStationChange}>
+        <option value="">Select Station</option>
+        {stations.map((station) => (
+          <option key={station.id} value={station.station_name}>
+            {station.station_name}
+          </option>
+        ))}
+      </select>
             </div>
             {/* Controls buttons */}
             <div className="controls-buttons">
@@ -171,19 +253,6 @@ function LiveInspection() {
               <button type="button" className="btn btn-danger" onClick={handleStop}>STOP</button>
             </div>
           </div>
-        </div>
-        {/* Loading Button below the Title */}
-        <div className="loading-buttons">
-          {isLoading ? (
-            <button className="btn btn-primary" type="button" disabled={!isLoading}>
-              <>
-                <span className="spinner-grow spinner-grow-sm" aria-hidden="true"></span>
-                <span role="status">&nbsp;&nbsp;Inspecting...</span>
-              </>
-            </button>
-          ) : (
-            ''
-          )}
         </div>
         {/* Inspector, Batch ID, Camera Health, PLC Health */}
         <div className="controls-section">
@@ -221,21 +290,34 @@ function LiveInspection() {
         <div className="camera-feed">
           <strong><span>LIVE</span></strong>
           <div className="camera-header">
-            <video ref={videoRef} autoPlay muted style={{ width: '700px', height: '450px' }} />
+            <img src={videoSrc} style={{ width: '700px', height: '450px' }} />
           </div>
-          {/* <div className="camera-display">
-            <img src={cameraFeeds[0] || '/path/to/placeholder.png'}/>
-          </div> */}
         </div>
 
         <div className="camera-thumbnails">
-          {cameraFeeds.map((feed, index) => (
-            <div key={index} className="camera-thumbnail">
-              <video ref={el => (thumbnailsRefs.current[index] = el)} autoPlay muted style={{ width: '131px', marginTop: '10px' }} />
-              <span>Camera {index + 1}</span>
-            </div>
-          ))}
+          {Array(6)
+            .fill(null) // Create an array with 6 items
+            .map((_, index) => (
+              <div key={index} className="camera-thumbnail">
+                {/* If there's an image URL, display the image; otherwise, show a placeholder */}
+                {imageUrls && imageUrls[index] ? (
+                  <img
+                    src={imageUrls[index]}
+                    alt={`Image ${index + 1}`}
+                    className="image-box-img"
+                    style={{ width: '131px', marginTop: '10px' }}
+                  />
+                ) : (
+                  <div className="placeholder" style={{ width: '131px', height: '131px', marginTop: '10px', backgroundColor: '#e0e0e0' }}>
+                    {/* Optionally, you can add text or an icon to indicate an empty space */}
+                    <span style={{ textAlign: 'center', display: 'block', lineHeight: '131px' }}>No Image</span>
+                  </div>
+                )}
+              </div>
+            ))}
         </div>
+
+
         {/* Defect classification, metrology, and summary section */}
         <div className="side-panel">
           {/* Defect classification table */}
@@ -247,30 +329,40 @@ function LiveInspection() {
                 <thead>
                   <tr>
                     <th>Defect</th>
-                    <th>Count</th>
+                    <th>Confidence Score</th>
                     <th>Percentage</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {defects.map((defect, i) => (
-                    <tr key={i}>
-                      <td>{defect.defect_type}</td>
-                      <td>{defect.count}</td>
-                      <td>{defect.percentage}%</td>
+                  {defects.length > 0 ? (
+                    defects.map((defect, i) => {
+                      const defectData = defect.defect_list.split(', ').map(item => {
+                        const [defectType, score] = item.split(' ');
+                        return {
+                          defect_type: defectType,
+                          count: score,
+                          percentage: (parseFloat(score) * 100).toFixed(2)
+                        };
+                      });
+
+                      return defectData.map((def, j) => (
+                        <tr key={`${i}-${j}`}>
+                          <td>{def.defect_type}</td>
+                          <td>{def.count}</td>
+                          <td>{def.percentage}%</td>
+                        </tr>
+                      ));
+                    })
+                  ) : (
+                    <tr>
+                      <td colSpan="3">Loading defects...</td>
                     </tr>
-                  ))}
-                  {/* Add empty rows if less than 3 defects */}
-                  {defects.length < 3 &&
-                    Array.from({ length: 3 - defects.length }).map((_, i) => (
-                      <tr key={`empty-${i}`}>
-                        <td>-</td>
-                        <td>-</td>
-                        <td>-</td>
-                      </tr>
-                    ))}
+                  )}
                 </tbody>
               </table>
             </div>
+
+
           </div>
 
 
@@ -288,9 +380,9 @@ function LiveInspection() {
                   </tr>
                 </thead>
                 <tbody>
-                  {[...Array(20)].map((_, i) => (
+                  {['Height', 'Width', 'Dia'].map((parameter, i) => (
                     <tr key={i}>
-                      <td>Parameter {i + 1}</td>
+                      <td>{parameter}</td>
                       <td>{(Math.random() * 100).toFixed(2)} mm</td>
                       <td>50.00 ±2</td>
                       <td className={Math.random() > 0.5 ? 'pass' : 'error'}>
@@ -318,17 +410,17 @@ function LiveInspection() {
                 <tbody>
                   <tr>
                     <td>Total Accepted</td>
-                    <td>{totalAccepted}</td>
-                    <td>{((totalAccepted / (totalAccepted + totalNonAccepted)) * 100).toFixed(2)}%</td>
+                    <td>{summary.totalAccepted}</td>
+                    <td>{((summary.totalAccepted / summary.totalInspected) * 100).toFixed(2)}%</td>
                   </tr>
                   <tr>
                     <td>Total Non Accepted</td>
-                    <td>{totalNonAccepted}</td>
-                    <td>{((totalNonAccepted / (totalAccepted + totalNonAccepted)) * 100).toFixed(2)}%</td>
+                    <td>{summary.totalNonAccepted}</td>
+                    <td>{((summary.totalNonAccepted / summary.totalInspected) * 100).toFixed(2)}%</td>
                   </tr>
                   <tr>
                     <td>Total Inspected</td>
-                    <td>{totalInspected}</td>
+                    <td>{summary.totalInspected}</td>
                     <td>100%</td>
                   </tr>
                 </tbody>
@@ -336,16 +428,39 @@ function LiveInspection() {
             </div>
           </div>
 
+
         </div>
       </div>
 
       <div className="bottom-section">
         <div className="bottom-box-wrapper">
           <div className="bottom-box">
-            <p>INSPECTION IN PROGRESS</p>
+            {isLoading && (
+              <div className="progress" style={{ marginTop: '20px' }}>
+                <div
+                  className="progress-bar bg-info"
+                  role="progressbar"
+                  style={{ width: `${progress}%` }}  // Dynamically change width
+                  aria-valuenow={progress}  // Set current progress value
+                  aria-valuemin="0"
+                  aria-valuemax="100"
+                ></div>
+              </div>
+            )}
           </div>
-          <div className="bottom-box-new">
-            <p style={{fontSize:'15px', marginTop:'12px'}}>ACCEPTED/REJECTED</p>
+          <div
+            style={{
+              color: statusColor,
+              fontWeight: 'bold',
+              backgroundColor: statusColor === 'green' ? 'lightgreen' : 'lightcoral',
+              padding: '10px',
+              borderRadius: '5px',
+              textAlign: 'center', 
+              height:'60px',
+              fontSize:'25px'
+            }}
+          >
+            {acceptanceLabel}
           </div>
         </div>
         <div className="additional-box">

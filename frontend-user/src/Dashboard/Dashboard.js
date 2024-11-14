@@ -74,63 +74,100 @@ function LiveInspection() {
   };
   
 
+  // const handleCheck = async () => {
+  //   if (isStreaming) {
+  //     setIsLoading(true); // Show loading state
+  //   }
+
+  //   try {
+  //     console.log('Inspect');
+
+  //     fetch('http://127.0.0.1:5000/inspect_func')
+      
+  //     // Fetch images based on unique part_id from the Flask API
+  //     // const response = await fetch(`http://127.0.0.1:5000/get_images?part_id=${uniquePartId}`);
+  //     // const data = await response.json();
+  
+  //     // // Check if images are returned successfully
+  //     // if (data.error) {
+  //     //   console.error(data.error);
+  //     //   setIsLoading(false);
+  //     //   return;
+  //     // }
+  
+  //     // const { image_urls } = data;
+  
+  //     // Fetch defects and summary data for the given part_id
+  //     const res = await fetch(`http://127.0.0.1:6001/api/defects?part_id=${uniquePartId}`);
+  //     const defects = await res.json();
+  //     setDefects(defects);
+  
+  //     const resp = await fetch(`http://127.0.0.1:6001/api/summary?part_id=${uniquePartId}`);
+  //     const summary = await resp.json();
+  //     setSummary(summary);
+
+  //     console.log('image update');
+      
+  //     // let newFeeds = [...cameraFeeds];
+  //     // for (let i = 0; i < 6; i++) {
+  //     //   if (newFeeds.length >= 6) {
+  //     //     newFeeds.shift();
+  //     //   }
+  //     //   newFeeds.push(image_urls[i]);
+  //     // }
+  
+  //     // Limit the number of images to 6
+  //     // newFeeds = newFeeds.slice(0, 6);
+  
+  //     // setCameraFeeds(newFeeds);
+
+  //     // Trigger backend to start inspection process
+  //     await fetch('http://127.0.0.1:5000/start_inspect', {
+  //       method: 'POST',
+  //     });
+  //   } catch (error) {
+  //     console.error('Error fetching images:', error);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
+
+
   const handleCheck = async () => {
     if (isStreaming) {
       setIsLoading(true); // Show loading state
     }
-
+  
     try {
-      console.log('Inspect');
-
-      fetch('http://127.0.0.1:5000/inspect_func')
-      
-      // Fetch images based on unique part_id from the Flask API
-      const response = await fetch(`http://127.0.0.1:5000/get_images?part_id=${uniquePartId}`);
-      const data = await response.json();
+      console.log('Starting inspection process');
   
-      // Check if images are returned successfully
-      if (data.error) {
-        console.error(data.error);
-        setIsLoading(false);
-        return;
+      setVideoSrc(`http://127.0.0.1:5000/inspect_func?part_id=${uniquePartId}`);
+      setIsStreaming(true);
+  
+      // Fetch defects data for the given part_id
+      const defectResponse = await fetch(`http://127.0.0.1:6001/api/defects?part_id=${uniquePartId}`);
+      if (!defectResponse.ok) {
+        throw new Error(`Error fetching defects: ${defectResponse.status}`);
       }
-  
-      const { image_urls } = data;
-  
-      // Fetch defects and summary data for the given part_id
-      const res = await fetch(`http://127.0.0.1:6001/api/defects?part_id=${uniquePartId}`);
-      const defects = await res.json();
+      const defects = await defectResponse.json();
       setDefects(defects);
   
-      const resp = await fetch(`http://127.0.0.1:6001/api/summary?part_id=${uniquePartId}`);
-      const summary = await resp.json();
-      setSummary(summary);
-
-      console.log('image update');
-      
-      let newFeeds = [...cameraFeeds];
-      for (let i = 0; i < 6; i++) {
-        if (newFeeds.length >= 6) {
-          newFeeds.shift();
-        }
-        newFeeds.push(image_urls[i]);
+      // Fetch summary data for the given part_id
+      const summaryResponse = await fetch(`http://127.0.0.1:6001/api/summary?part_id=${uniquePartId}`);
+      if (!summaryResponse.ok) {
+        throw new Error(`Error fetching summary: ${summaryResponse.status}`);
       }
+      const summary = await summaryResponse.json();
+      setSummary(summary);
   
-      // Limit the number of images to 6
-      newFeeds = newFeeds.slice(0, 6);
-  
-      setCameraFeeds(newFeeds);
-
-      // Trigger backend to start inspection process
-      await fetch('http://127.0.0.1:5000/start_inspect', {
-        method: 'POST',
-      });
+      console.log('Inspection data updated successfully');
     } catch (error) {
-      console.error('Error fetching images:', error);
+      console.error('Error during inspection process:', error);
     } finally {
-      setIsLoading(false);
+      setIsLoading(false); // Hide loading state
     }
   };
+  
 
   
 

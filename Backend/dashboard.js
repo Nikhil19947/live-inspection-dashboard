@@ -2,11 +2,33 @@ require('dotenv').config();
 const mysql = require('mysql2/promise'); // Use the promise version
 const express = require('express');
 const cors = require('cors');
-const PORT = 6001;
+const PORT = 5002;
 
 const app = express();
 app.use(express.json());
 app.use(cors());
+
+app.use(cors({
+  origin: 'http://localhost:3001', // Allow requests from this origin
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true, // If you need cookies or authentication headers
+}));
+
+const allowedOrigins = ['http://localhost:3000', 'http://localhost:3001'];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (allowedOrigins.includes(origin) || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true,
+}));
+
+
 
 // Create a MySQL connection pool
 const db = mysql.createPool({
@@ -37,6 +59,32 @@ app.get('/api/defects', async (req, res) => {
     }
 });
 
+
+app.get('/api/accept', async (req, res) => {
+    const { part_id } = req.query; // Extract part_id from query parameters
+
+    // Ensure part_id is provided, otherwise return an error
+    if (!part_id) {
+        return res.status(400).json({ error: 'part_id is required' });
+    }
+
+    // SQL query to select the most recent record based on timestamp
+    let sql = 'SELECT is_accepted FROM results WHERE part_id = ? ORDER BY timestamp DESC LIMIT 1'; // Modify SQL to sort by timestamp
+
+    try {
+        // Pass part_id as a parameter to the query to prevent SQL injection
+        const results = await db.query(sql, [part_id]);
+
+        // Check if results are found, and send them back
+        if (results.length > 0) {
+            res.json(results[0]); // Send the most recent `is_accepted` value
+        } else {
+            res.status(404).json({ error: 'No data found for the given part_id' });
+        }
+    } catch (err) {
+        return res.status(500).json({ error: err.message });
+    }
+});
 
   
 
@@ -73,21 +121,17 @@ app.get('/api/summary', async (req, res) => {
 });
 
 
-// Route for analytics
-app.get('/api/analytics', async (req, res) => {
+app.get('/api/get_analytics', async (req, res) => {
     const sql = `
-        SELECT analytics.analytics_id, analytics.total_inspections, analytics.total_pass, analytics.total_fail,
-               analytics.defect_count, analytics.pass_rate, analytics.fail_rate, products.part_name
-        FROM analytics
-        JOIN products ON analytics.part_id = products.part_id
-    `;
+        SELECT results.id, results.part, results.is_accepted, results.timestamp, results.station FROM results`;
     try {
-        const [results] = await db.query(sql);
-        res.json(results);
+        const [rows] = await db.query(sql);
+        res.json(rows); 
     } catch (err) {
         return res.status(500).json({ error: err.message });
     }
 });
+
 
 // Route for parts
 app.get('/api/parts', async (req, res) => {

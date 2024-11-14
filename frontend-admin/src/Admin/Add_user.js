@@ -38,7 +38,9 @@ const AddUserPage = () => {
         setSuccessMessage('');
 
         try {
-            const response = await axios.post('http://localhost:5000/signup', formData);
+            const response = await axios.post('http://localhost:5001/signup', formData, {
+                mode: 'no-cors'
+            });
 
             if (response.status === 201) {
                 setSuccessMessage('User successfully registered!');

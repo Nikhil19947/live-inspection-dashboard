@@ -10,12 +10,34 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+app.use(cors({
+  origin: 'http://localhost:3001', // Allow requests from this origin
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true, // If you need cookies or authentication headers
+}));
+
+const allowedOrigins = ['http://localhost:3000', 'http://localhost:3001'];
+
+app.use(cors({
+  origin: function (origin, callback) {
+    if (allowedOrigins.includes(origin) || !origin) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true,
+}));
+
+
+
 // MySQL connection
 const db = mysql.createConnection({
   host: 'localhost',
   user: 'root',
   password: 'root_pass813',
-  database: 'factreeai' 
+  database: 'dummydb' 
 });
 
 // Connect to MySQL
@@ -222,7 +244,7 @@ app.delete('/api/station/:id', (req, res) => {
 
 
 
-const PORT = process.env.PORT || 6000;
+const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });

@@ -32,7 +32,7 @@ body {
     height:40px;
     border-radius: 7px;
     padding:10px;
-    margin-right: 180px;
+    margin-right: 190px;
 }
 
 .right{
@@ -116,5 +116,48 @@ body {
     border-radius: 4px;
     padding: 5px;
     margin-left: 1px; 
+  }
+  
+
+  .date-input {
+    border: 1px solid #030303;
+    border-radius: 4px;
+    padding: 5px;
+    margin-left: 1px;
+  }
+  
+  .datepicker-container {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 8px;
+    width: 250px;
+  }
+  
+  .calendar-icon {
+    margin-right: 8px;
+    color: #666;
+    cursor: pointer;
+  }
+  
+  .datepicker-input {
+    border: none;
+    width: 100%;
+    outline: none;
+    padding-left: 8px;
+    font-size: 14px;
+  }
+  
+  .datepicker-container:hover {
+    border-color: #007bff;
+    display: flex;
+    gap: 20px;
+    align-items: center;
+    flex-wrap: nowrap;
+  }
+  
+  .datepicker-container .react-datepicker-wrapper {
+    width: 100%;
   }
   

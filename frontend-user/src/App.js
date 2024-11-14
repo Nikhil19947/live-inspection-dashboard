@@ -6,17 +6,9 @@ import facebookIcon from './assets/facebook.jpg';
 import logo from './assets/FactreeLogo.png';
 import model from './assets/Person.png';
 import DashboardPage from "./Dashboard/Dashboard.js";
-import ReportsPage from "./Reports/Reports.js";
 import NotFoundPgae from "./NotFoundPage/NotFoundPage.js";
-import DetailedViewPage from './Detailed_View/Detailed_View.js';
 import ForgotPasswordPage from './ForgotPassword/forgot-password.js';
 import name from './assets/Factree Writing.png';
-import AdminPage from './Admin/Admin.js'
-import AddUserPage from './Admin/Add_user.js'
-import PartManagementPage from './Part_management/Part_management.js';
-import AddPartPage from './Part_management/Add_part.js'
-import StationPage from './Station/Station.js';
-import AddStationPage from './Station/Add_station.js';
 
 function App() {
   const navigate = useNavigate();
@@ -41,6 +33,7 @@ function App() {
         headers: {
           'Content-Type': 'application/json',
         },
+        // mode:'no-cors',
         body: JSON.stringify({ username: email, password }),
       });
 
@@ -168,16 +161,8 @@ function MainApp() {
       <Routes>
         <Route path="/" element={<App />} />
         <Route path="/dashboard" element={<DashboardPage />} />
-        <Route path="/reports" element={<ReportsPage />} />
-        <Route path="/detailed_view" element={<DetailedViewPage/>}/>
         <Route path="/socials-login" element={<NotFoundPgae/>}/>
         <Route path="/forgot-password" element={<ForgotPasswordPage/>}/>
-        <Route path="/admin" element={<AdminPage/>}/>
-        <Route path="/add_user" element={<AddUserPage/>}/>
-        <Route path="/parts" element={<PartManagementPage/>}/>
-        <Route path="/add_part" element={<AddPartPage/>}/>
-        <Route path="/station" element={<StationPage/>}/>
-        <Route path="/add_station" element={<AddStationPage/>}/>
       </Routes>
     </Router>
   );

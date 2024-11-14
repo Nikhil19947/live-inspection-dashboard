@@ -27,7 +27,7 @@ const AddUserPage = () => {
         setSuccessMessage('');
 
         try {
-            const response = await axios.post('http://localhost:5000/add_part', formData);
+            const response = await axios.post('http://localhost:5001/add_part', formData);
 
             if (response.status === 201) {
                 setSuccessMessage('Part successfully added!');

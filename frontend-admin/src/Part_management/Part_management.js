@@ -12,7 +12,7 @@ const InspectionPage = () => {
     const pageRange = 5;
 
     useEffect(() => {
-        fetch('http://localhost:5000/api/parts')
+        fetch('http://localhost:5002/api/parts')
             .then(response => response.json())
             .then(data => {
                 setData(data);

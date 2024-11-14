@@ -352,13 +352,13 @@ th {
   padding: 10px;
   margin: 0px;
   margin-bottom: 10px; /* Add space between the two boxes */
-  background-color: #e10c0c;
+  /* background-color: #e10c0c; */
   text-align: center;
   border: 1px solid hsl(120, 5%, 96%);
   border-radius: 5px;
   overflow: hidden;
   width: 722px;
-  height: 75px;
+  height: 55px;
 }
 
 .bottom-box p {
@@ -407,6 +407,14 @@ strong p.additional-text {
   font-size: 16px; /* Optional: Slightly larger font for bolded text */
 }
 
+.progress {
+  height: 20px;
+  width: 100%;
+}
 
+.progress-bar {
+  height: 100%;
+  transition: width 0.05s ease-out; 
+}
 
 

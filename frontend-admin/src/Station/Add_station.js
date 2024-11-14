@@ -26,7 +26,9 @@ const AddUserPage = () => {
         setSuccessMessage('');
 
         try {
-            const response = await axios.post('http://localhost:5000/add_station', formData);
+            const response = await axios.post('http://localhost:5001/add_station', formData, {
+                mode: 'no-cors'
+            });
 
             if (response.status === 201) {
                 setSuccessMessage('Station successfully added!');
