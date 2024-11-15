@@ -9,6 +9,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import axios from 'axios';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
+import { format } from "date-fns";
 
 const InspectionPage = () => {
   const gaugeTexts = [
@@ -53,23 +54,23 @@ const InspectionPage = () => {
 
 // New date filtering logic in filteredData
 const filteredData = data.filter((item) => {
-  const itemDate = item.timestamp.split(" ")[0]; // Extract the date part (YYYY-MM-DD)
-  const isWithinDateRange = 
-    (!startDate || itemDate >= startDate) && 
-    (!endDate || itemDate <= endDate);
+  const itemDate = new Date(item.timestamp);
+  const startDateMatch = startDate ? itemDate >= new Date(startDate) : true;
+  const endDateMatch = endDate ? itemDate <= new Date(endDate) : true;
 
   return (
     (stationFilter ? item.station === stationFilter : true) &&
     (defectTypeFilter ? item.defectType === defectTypeFilter : true) &&
-    (resultFilter ? 
-      // Compare based on the accepted/rejected status
-      (item.is_accepted === 0 && resultFilter.toLowerCase() === 'rejected') || 
-      (item.is_accepted === 1 && resultFilter.toLowerCase() === 'accepted')
-      : true) && 
+    (resultFilter ?
+      ((item.is_accepted === 0 && resultFilter.toLowerCase() === "rejected") || 
+       (item.is_accepted === 1 && resultFilter.toLowerCase() === "accepted"))
+      : true) &&
     (shiftFilter ? item.shift === shiftFilter : true) &&
-    isWithinDateRange
+    startDateMatch &&
+    endDateMatch
   );
 });
+
 
   const paginatedData = filteredData.slice(
     (currentPage - 1) * itemsPerPage,
@@ -104,7 +105,7 @@ const filteredData = data.filter((item) => {
                 <li class="nav-item">
                   <a href="/detailed_view" class="btn btn-outline-secondary w-100 mb-3" style={{borderRadius:'8px'}}>Detailed View</a>
                 </li>
-                <li class="nav-item" style={{ marginTop: '520px' }}>
+                <li class="nav-item" style={{ marginTop: '400px' }}>
                   <a href="/socials-login" class="btn btn-outline-secondary w-100 mb-3" style={{borderRadius:'8px'}}>Community</a>
                 </li>
                 <li class="nav-item">
@@ -235,7 +236,7 @@ const filteredData = data.filter((item) => {
                     <td style={{ color: item.is_accepted === 0 ? 'red' : 'green' }}>
                       {item.is_accepted === 0 ? "REJECTED" : "ACCEPTED"}
                     </td>
-                    <td>{item.timestamp}</td>
+                    <td>{item.timestamp ? format(new Date(item.timestamp), "yyyy-MM-dd HH:mm:ss") : "N/A"}</td>
                     <td>
                       <a href='/detailed_view' style={{textDecoration:'none'}}>View Details</a>
                     </td>

@@ -56,10 +56,10 @@ function ForgotPassword() {
   return (
     <div className="container-fluid">
       <div className="row">
-        <div className="col-md-6 login-section">
+        <div className="col-md-6 login-section" style={{marginTop:'-130px'}}>
           <div className="logo">
-            <img src={logo} alt="Logo" />
-            <img style={{ width: '110px', marginBottom: '10px' }} src={name} alt="logo" />
+            <img src={logo} alt="Logo" style={{marginTop:'100px'}} />
+            <img style={{ width: '110px', marginBottom: '10px', marginTop:'100px' }} src={name} alt="logo" />
           </div>
           <h2>Reset Password</h2>
           <p style={{marginLeft:'40px'}}>Submit your Email ID and new password</p>
@@ -125,9 +125,9 @@ function ForgotPassword() {
           </button>
         </div>
 
-        <div className="col-md-6 welcome-section">
+        <div className="col-md-6 welcome-section"style={{marginTop:'-130px'}}>
           <div className="text-image-container">
-            <h2>Welcome to the most advanced deep tech engine!</h2>
+            <h2 style={{height:'100px', marginTop:'200px'}}>Welcome to the most advanced deep tech engine!</h2>
             <img src={model} alt="Person" />
           </div>
         </div>

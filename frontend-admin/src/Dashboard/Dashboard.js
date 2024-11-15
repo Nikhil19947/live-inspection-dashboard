@@ -290,7 +290,7 @@ if (acceptanceStatus) {
         <div className="camera-feed">
           <strong><span>LIVE</span></strong>
           <div className="camera-header">
-            <img src={videoSrc} style={{ width: '700px', height: '450px' }} />
+            <img src={videoSrc} style={{ width: '700px', height: '350px' }} />
           </div>
         </div>
 
@@ -308,7 +308,7 @@ if (acceptanceStatus) {
                     style={{ width: '131px', marginTop: '10px' }}
                   />
                 ) : (
-                  <div className="placeholder" style={{ width: '131px', height: '131px', marginTop: '10px', backgroundColor: '#e0e0e0' }}>
+                  <div className="placeholder" style={{ width: '131px', height: '110px',  backgroundColor: '#e0e0e0' }}>
                     {/* Optionally, you can add text or an icon to indicate an empty space */}
                     <span style={{ textAlign: 'center', display: 'block', lineHeight: '131px' }}>No Image</span>
                   </div>
@@ -323,47 +323,53 @@ if (acceptanceStatus) {
           {/* Defect classification table */}
           {/* Defect classification table */}
           <div className="defect-classification">
-            <h2 style={{ marginTop: '15px' }}>Defect Classification</h2>
-            <div className="table-container">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Defect</th>
-                    <th>Confidence Score</th>
-                    <th>Percentage</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {defects.length > 0 ? (
-                    defects.map((defect, i) => {
-                      const defectData = defect.defect_list.split(', ').map(item => {
-                        const [defectType, score] = item.split(' ');
-                        return {
-                          defect_type: defectType,
-                          count: score,
-                          percentage: (parseFloat(score) * 100).toFixed(2)
-                        };
-                      });
+  <h2 style={{ marginTop: '15px' }}>Defect Classification</h2>
+  <div className="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Defect</th>
+          <th>Confidence Score</th>
+          <th>Percentage</th>
+        </tr>
+      </thead>
+      <tbody>
+        {defects.length > 0 ? (
+          defects.map((defect, i) => {
+            const defectData = defect.defect_list.split(', ').map(item => {
+              // Split each item by space, but ensure the last part is the score
+              const parts = item.split(' ');
+              const score = parseFloat(parts.pop()); // Take the last element as the score
+              const defectType = parts.join(' '); // Join the rest as the defect type
 
-                      return defectData.map((def, j) => (
-                        <tr key={`${i}-${j}`}>
-                          <td>{def.defect_type}</td>
-                          <td>{def.count}</td>
-                          <td>{def.percentage}%</td>
-                        </tr>
-                      ));
-                    })
-                  ) : (
-                    <tr>
-                      <td colSpan="3">Loading defects...</td>
-                    </tr>
-                  )}
-                </tbody>
-              </table>
-            </div>
+              // Calculate percentage only if the score is a valid number
+              const percentage = isNaN(score) ? 'N/A' : (score * 100).toFixed(2);
 
+              return {
+                defect_type: defectType,
+                count: score.toFixed(2),
+                percentage: percentage
+              };
+            });
 
-          </div>
+            return defectData.map((def, j) => (
+              <tr key={`${i}-${j}`}>
+                <td>{def.defect_type}</td>
+                <td>{def.count}</td>
+                <td>{def.percentage}%</td>
+              </tr>
+            ));
+          })
+        ) : (
+          <tr>
+            <td colSpan="3">Loading defects...</td>
+          </tr>
+        )}
+      </tbody>
+    </table>
+  </div>
+</div>
+
 
 
           {/* Metrology table */}

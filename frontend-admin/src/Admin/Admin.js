@@ -128,7 +128,7 @@ const InspectionPage = () => {
     ];
 
     const [currentPage, setCurrentPage] = useState(1);
-    const itemsPerPage = 8;
+    const itemsPerPage = 7;
     const totalPages = Math.ceil(data.length / itemsPerPage);
     const pageRange = 5;
 
@@ -180,7 +180,7 @@ const InspectionPage = () => {
                                 <li class="nav-item">
                                     <a href="/admin" class="btn btn-outline-secondary w-100 mb-3" style={{ borderRadius: '8px' }}>User management</a>
                                 </li>
-                                <li class="nav-item" style={{ marginTop: '360px' }}>
+                                <li class="nav-item" style={{ marginTop: '240px' }}>
                                     <a href="/socials-login" class="btn btn-outline-secondary w-100 mb-3" style={{ borderRadius: '8px' }}>Community</a>
                                 </li>
                                 <li class="nav-item">
@@ -199,7 +199,7 @@ const InspectionPage = () => {
                             <p style={{ marginLeft: '15px', marginTop: '-2px' }}>Filters</p>
                             <div className="dropdown" style={{ marginBottom: '15px' }}>
                                 <i className="fas fa-search search-icon" style={{ marginLeft: '15px' }}></i>
-                                <select className="left-first" style={{ width: '470px', paddingLeft: '30px', height: '60px' }}>
+                                <select className="left-first" style={{ width: '400px', paddingLeft: '30px', height: '60px' }}>
                                     <option>Search Role</option>
                                     <option>Super Admin</option>
                                     <option>Admin</option>
@@ -208,7 +208,7 @@ const InspectionPage = () => {
                             </div>
                             <div className="dropdown">
                                 <i className="fas fa-search search-icon" style={{ marginLeft: '15px' }}></i>
-                                <select className="left-first" style={{ width: '470px', paddingLeft: '30px', height: '60px' }}>
+                                <select className="left-first" style={{ width: '400px', paddingLeft: '30px', height: '60px' }}>
                                     <option>Search Plan</option>
                                     <option>Plan 1</option>
                                     <option>Plan 2</option>
@@ -216,7 +216,7 @@ const InspectionPage = () => {
                             </div>
                             <div className="dropdown">
                                 <i className="fas fa-search search-icon" style={{ marginLeft: '15px' }}></i>
-                                <select className="left-first" style={{ width: '470px', paddingLeft: '30px', height: '60px' }}>
+                                <select className="left-first" style={{ width: '400px', paddingLeft: '30px', height: '60px' }}>
                                     <option>Search Status</option>
                                     <option>Active</option>
                                     <option>Inactive</option>
@@ -230,7 +230,7 @@ const InspectionPage = () => {
                             <div className="dropdown-container">
                                 <div className="dropdown" style={{ marginLeft: '10px' }}>
                                     <i className="fas fa-download download-icon"></i>
-                                    <select className="right" style={{ width: '110px', paddingLeft: '30px', marginRight: '920px' }}>
+                                    <select className="right" style={{ width: '110px', paddingLeft: '30px', marginRight: '730px' }}>
                                         <option>Export</option>
                                         <option>Pdf</option>
                                         <option>Excel</option>

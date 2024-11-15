@@ -112,7 +112,7 @@ const InspectionPage = () => {
                             <div className="dropdown-container">
                                 <div className="dropdown" style={{ marginLeft: '10px', marginBottom: '30px', marginTop: '10px' }}>
                                     <i className="fas fa-download download-icon"></i>
-                                    <select className="right" style={{ width: '110px', paddingLeft: '30px', marginRight: '920px' }}>
+                                    <select className="right" style={{ width: '110px', paddingLeft: '30px', marginRight: '740px' }}>
                                         <option>Export</option>
                                         <option>Pdf</option>
                                         <option>Excel</option>

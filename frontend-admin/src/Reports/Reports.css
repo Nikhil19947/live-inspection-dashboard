@@ -6,7 +6,7 @@ body {
     background-color: #ffffff;
     padding: 15px;
     border-radius: 5px;
-    width: 1500px;
+    width: 1300px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     margin-bottom: 25px;
 }
@@ -32,7 +32,7 @@ body {
     height:40px;
     border-radius: 7px;
     padding:10px;
-    margin-right: 190px;
+    margin-right: 80px;
 }
 
 .right{
@@ -42,12 +42,34 @@ body {
     margin-right: 0px;
 }
 
+.table-box {
+  padding: 10px; /* Adjust padding to reduce box height */
+  margin-top: 15px;
+  max-height: 600px; /* Set a max height for the box */
+  overflow-y: auto; /* Add scroll for overflow content */
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+table th, table td {
+  padding: 5px 10px; /* Reduce padding for compact rows */
+  line-height: 1.2; /* Adjust line-height to reduce row height */
+  font-size: 14px; /* Optionally adjust font-size */
+}
+
+.pagination-container {
+  margin-top: 10px; /* Adjust pagination position */
+}
+
 
 .table-box {
     background-color: #ffffff;
     padding: 10px;
     border-radius: 5px;
-    width: 1500px;
+    width: 1300px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     margin-bottom: 15px;
 }

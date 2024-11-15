@@ -99,12 +99,12 @@ function App() {
   };
 
   return (
-    <div className="container-fluid">
+    <div className="container-fluid" >
       <div className="row">
-        <div className="col-md-6 login-section">
+        <div className="col-md-6 login-section"style={{marginTop:'-130px'}}>
           <div className="logo">
-            <img src={logo} alt="Logo" />
-            <img style={{width:'110px', marginBottom:'10px'}} src={name} alt="logo"/>
+            <img src={logo} alt="Logo" style={{marginTop:'100px'}}/>
+            <img style={{width:'110px', marginBottom:'10px', marginTop:'100px'}} src={name} alt="logo"/>
           </div>
           <h2>LOGIN</h2>
           <p style={{marginLeft:'50px'}}>Login to inspect smarter and spend lighter</p>
@@ -151,11 +151,11 @@ function App() {
           </button>
         </div>
 
-        <div className="col-md-6 welcome-section">
+        <div className="col-md-6 welcome-section" style={{marginTop:'-130px'}}>
           <div className="text-image-container">
-            <h2>Welcome to the most advanced deep tech engine!</h2>
-            <img src={model} alt="Person" />
-          </div>
+            <h2 style={{height:'100px', marginTop:'200px'}}>Welcome to the most advanced deep tech engine!</h2>
+            <img src={model} alt="Person"/>
+          </div>  
         </div>
       </div>
     </div>

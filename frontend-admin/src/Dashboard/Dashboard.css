@@ -74,12 +74,6 @@ body, html {
   margin-bottom: 10px; /* Add space below the title */
 }
 
-/* .loading-buttons {
-  text-align: center; 
-  margin-left: 150px;
-} */
-
-
 .factree-logo {
   display: flex;
   align-items: center;
@@ -208,8 +202,8 @@ body, html {
 /* Main inspection area */
 .main-inspection-area {
   display: flex;
-  gap: 9px;
-  padding: 10px;
+  gap: 5px; /* Reduced gap between live feed and bottom elements */
+  padding: 5px; /* Reduced padding */
   width: 100%;
   box-sizing: border-box;
 }
@@ -220,7 +214,8 @@ body, html {
   padding: 10px;
   border: 1px solid #000000;
   border-radius: 5px;
-  height: 500px;
+  width: 100px;
+  height: 400px;
 }
 
 .camera-header {
@@ -252,6 +247,7 @@ body, html {
   flex: 1;
   display: grid;
   grid-template-columns: 1fr 1fr;
+  height: 10px;
   gap: 5px;
 }
 
@@ -260,6 +256,7 @@ body, html {
   padding: 10px;
   text-align: center;
   border: 1px solid #090909;
+  height: 130px;
 }
 
 .side-panel {
@@ -274,7 +271,7 @@ body, html {
 
 /* Style for table containers to add scrollbars */
 .table-container {
-  max-height: calc(3 * 64.5px); 
+  max-height: calc(3 * 49px); 
   overflow-y: auto;
   padding: 0px;
   border: 1px solid #ccc;
@@ -350,14 +347,14 @@ th {
 
 .bottom-box {
   padding: 10px;
-  margin: 0px;
+  margin-top: -80px;
   margin-bottom: 10px; /* Add space between the two boxes */
   /* background-color: #e10c0c; */
   text-align: center;
   border: 1px solid hsl(120, 5%, 96%);
   border-radius: 5px;
   overflow: hidden;
-  width: 722px;
+  width: 637px;
   height: 55px;
 }
 
@@ -376,15 +373,16 @@ th {
   border: 1px solid hsl(120, 5%, 96%);
   border-radius: 5px;
   overflow: hidden;
-  width: 722px;
+  width: 724px;
   height: 50px;
 }
 
 .additional-box {
-  width: 345px; /* Set the width */
+  width: 310px; /* Set the width */
   max-height: 130px; /* Limit the height of the box */
+  margin-top: -78px;
+  margin-left: 7px;
   padding: 10px; /* Reduce padding */
-  margin: 0 10px; /* Add margin between boxes */
   background-color: #ffffff; /* Background color for the box */
   border-radius: 5px; /* Rounded corners */
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: shadow effect */
@@ -392,9 +390,8 @@ th {
   flex-direction: column; /* Stack items vertically */
   align-items: flex-start; /* Align items to the left */  
   justify-content: flex-start; /* Align items to the top */
-  margin-right: 540px;
-  margin-top: 5px;
-  gap: 5px;
+  margin-right: 470px;
+  gap: 1px;
 }
 
 .additional-text {
@@ -416,5 +413,6 @@ strong p.additional-text {
   height: 100%;
   transition: width 0.05s ease-out; 
 }
+
 
 
