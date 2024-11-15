@@ -39,12 +39,14 @@ const InspectionPage = () => {
   useEffect(() => {
     axios.get("http://localhost:5002/api/get_analytics") // API call
       .then((response) => {
-        setData(response.data); // Set the data received from the API
+        const sortedData = response.data.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+        setData(sortedData); // Set the sorted data
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
-  }, []); 
+  }, []);
+  
 
   const handlePageChange = (newPage) => {
     if (newPage > 0 && newPage <= totalPages) {
@@ -55,8 +57,10 @@ const InspectionPage = () => {
 // New date filtering logic in filteredData
 const filteredData = data.filter((item) => {
   const itemDate = new Date(item.timestamp);
+  const adjustedEndDate = endDate ? new Date(new Date(endDate).setHours(23, 59, 59, 999)) : null;
+
   const startDateMatch = startDate ? itemDate >= new Date(startDate) : true;
-  const endDateMatch = endDate ? itemDate <= new Date(endDate) : true;
+  const endDateMatch = endDate ? itemDate <= adjustedEndDate : true;
 
   return (
     (stationFilter ? item.station === stationFilter : true) &&
@@ -70,7 +74,6 @@ const filteredData = data.filter((item) => {
     endDateMatch
   );
 });
-
 
   const paginatedData = filteredData.slice(
     (currentPage - 1) * itemsPerPage,

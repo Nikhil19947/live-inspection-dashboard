@@ -39,7 +39,7 @@ const InspectionPage = () => {
                 <li class="nav-item">
                   <a href="/detailed_view" class="btn btn-outline-secondary w-100 mb-3" style={{ borderRadius: '8px' }}>Detailed View</a>
                 </li>
-                <li class="nav-item" style={{ marginTop: '520px' }}>
+                <li class="nav-item" style={{ marginTop: '400px' }}>
                   <a href="/socials-login" class="btn btn-outline-secondary w-100 mb-3" style={{ borderRadius: '8px' }}>Community</a>
                 </li>
                 <li class="nav-item">
@@ -54,7 +54,7 @@ const InspectionPage = () => {
       <div style={{ padding: "20px", marginLeft: '20px' }}>
         <div style={{ width: '100%' }}>
           <h1 className="live-inspection-title">Detailed View</h1>
-          <div className="dropdown" style={{ marginLeft: '1470px', marginBottom: '15px' }}>
+          <div className="dropdown" style={{ marginLeft: '1240px', marginBottom: '10px' }}>
             <i className="fas fa-download download-icon"></i>
             <select className="right" style={{ width: '110px', paddingLeft: '30px' }}>
               <option>Export</option>
@@ -62,29 +62,29 @@ const InspectionPage = () => {
               <option>Excel</option>
             </select>
           </div>
-          <div className="title" style={{ display: 'flex', justifyContent: 'space-between', width: '1580px', height: '300px' }}>
+          <div className="title" style={{ display: 'flex', justifyContent: 'space-between', width: '1350px', height: '230px' }}>
             <div style={{ flex: '0.8' }}>
-              <h2 style={{ marginBottom: '30px', color: '#828587' }}>Status: Rejected</h2>
+              <h2 style={{ marginBottom: '10px', color: '#828587' }}>Status: Rejected</h2>
               <h2 style={{ color: '#828587' }}>Part Number</h2>
-              <h2 style={{ marginBottom: '30px', color: '#828587' }}>GB003HTG123</h2>
+              <h2 style={{ marginBottom: '10px', color: '#828587' }}>GB003HTG123</h2>
               <h2 style={{ color: '#828587' }}>Part Description</h2>
-              <h2 style={{ marginBottom: '30px', color: '#828587' }}>Goldie 3000ml Short Angular Bottle</h2>
+              <h2 style={{ marginBottom: '10px', color: '#828587' }}>Goldie 3000ml Short Angular Bottle</h2>
             </div>
 
             <div style={{ flex: '0.8' }}>
-              <h2 style={{ marginBottom: '30px', color: '#828587' }}>Station: 1</h2>
+              <h2 style={{ marginBottom: '10px', color: '#828587' }}>Station: 1</h2>
               <h2 style={{ color: '#828587' }}>Model Number</h2>
-              <h2 style={{ marginBottom: '30px', color: '#828587' }}>GB003HTG123</h2>
+              <h2 style={{ marginBottom: '10px', color: '#828587' }}>GB003HTG123</h2>
               <h2 style={{ color: '#828587' }}>Shift</h2>
-              <h2 style={{ marginBottom: '30px', color: '#828587', marginLeft: '15px' }}>A</h2>
+              <h2 style={{ marginBottom: '10px', color: '#828587', marginLeft: '15px' }}>A</h2>
             </div>
             <div style={{ flex: '0.8' }}>
-              <h2 style={{ marginBottom: '30px', color: '#828587' }}>Batch Number</h2>
-              <h2 style={{ marginBottom: '30px', color: '#828587' }}>GB003HTG123</h2>
+              <h2 style={{ marginBottom: '10px', color: '#828587' }}>Batch Number</h2>
+              <h2 style={{ marginBottom: '10px', color: '#828587' }}>GB003HTG123</h2>
               <h2 style={{ color: '#828587' }}>Inspection Timestamp</h2>
-              <h2 style={{ marginBottom: '30px', color: '#828587' }}>29-Oct-2024 05:03:01</h2>
+              <h2 style={{ marginBottom: '10px', color: '#828587' }}>29-Oct-2024 05:03:01</h2>
               <h2 style={{ color: '#828587' }}>Defect List</h2>
-              <h2 style={{ marginBottom: '30px', color: '#828587' }}>Flash and Pinhole</h2>
+              <h2 style={{ marginBottom: '10px', color: '#828587' }}>Flash and Pinhole</h2>
             </div>
             <div style={{ flex: '1.6' }}>
               <h2 style={{ color: '#828587' }}>Metrology Readings</h2>
@@ -128,20 +128,20 @@ const InspectionPage = () => {
 
           </div>
         </div>
-        <div style={{ width: '1580px', marginTop: '20px' }}>
+        <div style={{ width: '1350px', marginTop: '20px' }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
             {[{ label: 'No defect' }, { label: 'Defect' }, { label: 'No defect' }].map((item, index) => (
               <div key={index} style={{
                 position: 'relative',
                 backgroundColor: 'white',
                 width: '32%',
-                height: '190px',
+                height: '162px',
                 borderRadius: '8px',
                 boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
                 padding: '20px',
               }}>
                 {item.label}
-                <img src={logo} alt="Inspection" style={{ width: '270px', height: '150px', marginLeft: '50px' }} />
+                <img src={logo} alt="Inspection" style={{ width: '270px', height: '130px', marginLeft: '50px' }} />
                 <AiOutlineEye
                   size={24}
                   style={{
@@ -162,13 +162,13 @@ const InspectionPage = () => {
                 position: 'relative',
                 backgroundColor: 'white',
                 width: '32%',
-                height: '190px',
+                height: '162px',
                 borderRadius: '8px',
                 boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
                 padding: '20px',
               }}>
                 {item.label}
-                <img src={logo} alt="Inspection" style={{ width: '270px', height: '150px', marginLeft: '50px' }} />
+                <img src={logo} alt="Inspection" style={{ width: '270px', height: '130px', marginLeft: '50px' }} />
                 <AiOutlineEye
                   size={24}
                   style={{
@@ -192,8 +192,8 @@ const InspectionPage = () => {
               backgroundColor: '#f8f9fa',
               padding: '20px',
               borderRadius: '8px',
-              width: '750px',
-              height: '750px',
+              width: '650px',
+              height: '650px',
               marginLeft: '-150px'
             }}>
               <img src={selectedImage} alt="Larger view" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
