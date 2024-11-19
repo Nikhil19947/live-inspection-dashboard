@@ -10,9 +10,10 @@ import bson
 import os 
 import time 
 
-
 part_id = ""
-
+part_name = ""
+part_station = ""
+capture = False
 
 def start_process_util():
 
@@ -170,6 +171,7 @@ gm1_model = gm1.load_model()
 def stop_process_util():
     connection = None
     cursor = None
+    is_running = False 
     
     try:        
         data = request.get_json(force=True)
@@ -213,147 +215,85 @@ def stop_process_util():
         if connection is not None and connection.is_connected():
             connection.close()
 
-# def generate(part_id):
-#     cap = cv2.VideoCapture(0)
-#     input_paths = []  # List to store input image paths
-#     pred_paths = []   # List to store predicted image paths
+def capture():
+    global capture
+    capture = True
 
-#     # Create a unique folder for each inspection
-#     inspection_folder = os.path.join(datadrive_path, part_id)  # Using the part_id for the folder name
-#     os.makedirs(inspection_folder, exist_ok=True)  # Create the directory if it doesn't exist
-
-#     while True:
-#         ret, img = cap.read()
-#         if not ret:
-#             print("Failed to capture frame.")
-#             break
-        
-#         # Generate a new unique ObjectId for each frame
-#         x = bson.ObjectId()
-#         print(f"Generated ObjectId: {x}")  # Debugging: Ensure ObjectId is unique for each frame
-        
-#         # Copy the captured image
-#         img_copy = img.copy()
-        
-#         # Generate predicted image using your model
-#         pred_image, dets, cords = gm1.get_inference(gm1_model, img)
-#         defect_list = gm1.get_defect_list(dets)
-#         is_accepted = gm1.check_kanban(defect_list)
-
-#         # Define unique paths for the input and predicted images
-#         timestamp = datetime.now().strftime("%Y%m%d%H%M%S%f")  # Unique timestamp for each iteration
-#         input_img_path = os.path.join(inspection_folder, f'{timestamp}_{x}_ip.jpg')
-#         pred_img_path = os.path.join(inspection_folder, f'{timestamp}_{x}_pf.jpg')
-        
-#         # Debugging: Log the paths for each frame
-#         print(f"Saving input image to: {input_img_path}")
-#         print(f"Saving predicted image to: {pred_img_path}")
-        
-#         # Save the images with unique paths
-#         cv2.imwrite(input_img_path, img_copy)
-#         cv2.imwrite(pred_img_path, pred_image)
-        
-#         # Append the new paths to the list
-#         input_paths.append(input_img_path)
-#         pred_paths.append(pred_img_path)
-
-#         # Encode the processed image to send over the response
-#         ret, buffer = cv2.imencode('.jpg', pred_image)
-#         pred_image_frame = buffer.tobytes()
-#         print(f"input---------------------------------------------------------- {input_paths}")
-#         print(f"pred---------------------------------------------------------- {pred_paths}")
-
-#         # Yield frame in a format compatible with HTML5 video tag
-#         yield (b'--frame\r\n'
-#                b'Content-Type: image/jpeg\r\n\r\n' + pred_image_frame + b'\r\n')
-        
-#         save_to_db(part_id, input_paths, pred_paths, defect_list, is_accepted)
-      
-        
-#     cap.release()
-#     cv2.destroyAllWindows()
-
-#     # Return the lists of paths to be saved in the database
-#     return input_paths, pred_paths, defect_list, is_accepted
-def inspect_func():
-    global l
-    save_to_db(l[0], l[1], l[2], l[3], l[4])
-
-
-
-def generate(part_id):
+def generate(part_id, part_name, part_station):
     global l
     cap = cv2.VideoCapture(0)
-    input_paths = []  # List to store input image paths
-    pred_paths = []   # List to store predicted image paths
-
-    # Create a unique folder for each inspection
-    inspection_folder = os.path.join(datadrive_path, part_id)  # Using the part_id for the folder name
-    os.makedirs(inspection_folder, exist_ok=True)  # Create the directory if it doesn't exist
     l = []
-
+    global capture
+    capture = False  # Ensure that capture is initialized as False
+    
+    # Directory for part_id (main folder)
+    inspection_folder = os.path.join(datadrive_path, part_id)
+    os.makedirs(inspection_folder, exist_ok=True)
+    
+    capture_count = 1  # Track the number of captures (subfolders)
+    
     while True:
         ret, img = cap.read()
         if not ret:
             print("Failed to capture frame.")
             break
         
-        # Generate a new unique ObjectId for each frame
-        x = bson.ObjectId()
-        print(f"Generated ObjectId: {x}")  # Debugging: Ensure ObjectId is unique for each frame
-        
-        # Copy the captured image
-        img_copy = img.copy()
-        
         # Generate predicted image using your model
         pred_image, dets, cords = gm1.get_inference(gm1_model, img)
         defect_list = gm1.get_defect_list(dets)
         is_accepted = gm1.check_kanban(defect_list)
-
-        # Define unique paths for the input and predicted images
         timestamp = datetime.now().strftime("%Y%m%d%H%M%S%f")  # Unique timestamp for each iteration
-        # input_img_path = os.path.join(inspection_folder, f'{timestamp}_{x}_ip.jpg')
-        # pred_img_path = os.path.join(inspection_folder, f'{timestamp}_{x}_pf.jpg')
-        for i in range(6):
-            input_img_path = os.path.join(inspection_folder, f'{i}ip.jpg')
-            pred_img_path = os.path.join(inspection_folder, f'{i}pf.jpg')
         
-            # Debugging: Log the paths for each frame
-            print(f"Saving input image to: {input_img_path}")
-            print(f"Saving predicted image to: {pred_img_path}")
-            
-            # Save the images with unique paths
-            cv2.imwrite(input_img_path, img_copy)
-            cv2.imwrite(pred_img_path, pred_image)
-            
-            # Append the new paths to the list
-            input_paths = [input_img_path]
-            pred_paths = [pred_img_path]
+        img_copy = img.copy()
 
+        # Create a subfolder for the current capture (e.g., capture_1, capture_2)
+        capture_folder = os.path.join(inspection_folder, f"capture_{capture_count}")
+        os.makedirs(capture_folder, exist_ok=True)
+        
+        input_paths = []  # List to hold the paths for input images
+        pred_paths = []  # List to hold the paths for predicted images
+
+        if capture:
+            # Only execute this block when capture is True
+            for i in range(6):
+                input_img_path = os.path.join(capture_folder, f'{i}ip.jpg')
+                pred_img_path = os.path.join(capture_folder, f'{i}pf.jpg')
+            
+                # Debugging: Log the paths for each frame
+                print(f"Saving input image to: {input_img_path}")
+                print(f"Saving predicted image to: {pred_img_path}")
+                
+                # Save the images with unique paths
+                cv2.imwrite(input_img_path, img_copy)
+                cv2.imwrite(pred_img_path, pred_image)
+                
+                # Append the new paths to the list
+                input_paths.append(input_img_path)
+                pred_paths.append(pred_img_path)
+            
+            capture = False  # Set capture to False to stop further captures
+
+            # Increment the capture counter to create a new folder next time
+            capture_count += 1
+            print(f"Defect list: {defect_list}, Acceptance status: {is_accepted}")
+            save_to_db(part_id, input_paths, pred_paths, defect_list, is_accepted, part_station, part_name)
+        
         # Encode the processed image to send over the response
         ret, buffer = cv2.imencode('.jpg', pred_image)
         pred_image_frame = buffer.tobytes()
-        print(f"input---------------------------------------------------------- {input_paths}")
-        print(f"pred---------------------------------------------------------- {pred_paths}")
 
         # Yield frame in a format compatible with HTML5 video tag
         yield (b'--frame\r\n'
                b'Content-Type: image/jpeg\r\n\r\n' + pred_image_frame + b'\r\n')
-        
-        # save_to_db(part_id, input_paths, pred_paths, defect_list, is_accepted)
-        l = [part_id, input_paths, pred_paths, defect_list, is_accepted]
-    
-        
+
     cap.release()
     cv2.destroyAllWindows()
 
-    # Return the lists of paths to be saved in the database
-    return input_paths, pred_paths, defect_list, is_accepted
+    # Return defect list and acceptance status without paths
+    return defect_list, is_accepted
 
-
-def save_to_db(part_id, input_paths, pred_paths, defect_list, is_accepted):
-    base_directory = r'C:\Users\Skanda J\Downloads\BE_Dev\BE_Dev'  # Base path to prepend
-    
+BASE_URL = r'C:\Users\Skanda J\Downloads\BE_Dev\BE_Dev'
+def save_to_db(part_id, input_paths, pred_paths, defect_list, is_accepted, station, part):
     try:
         # Establish MySQL connection
         connection = mysql.connector.connect(
@@ -366,36 +306,53 @@ def save_to_db(part_id, input_paths, pred_paths, defect_list, is_accepted):
         if connection.is_connected():
             cursor = connection.cursor()
 
+            # List to hold URLs for input and predicted images
+            input_urls = []
+            pred_urls = []
+
             # Iterate over the input and predicted paths
             for i in range(len(input_paths)):
                 # Generate a unique ID for each entry
                 unique_id = str(uuid.uuid4())  # Generate unique ID
-
-                # Prepend the base directory to the paths
-                input_path = os.path.join(base_directory, input_paths[i].lstrip(os.sep))  # Ensure correct formatting
-                pred_path = os.path.join(base_directory, pred_paths[i].lstrip(os.sep))  # Ensure correct formatting
-
-                # Convert the defect list to a string
-                defect_str = ", ".join(defect_list)
-
-                # Insert or update data in the results table using "ON DUPLICATE KEY UPDATE"
-                query = """
-                INSERT INTO results (id, part_id, input_frame_path, inference_frame_path, defect_list, is_accepted)
-                VALUES (%s, %s, %s, %s, %s, %s)
-                ON DUPLICATE KEY UPDATE 
-                    part_id = VALUES(part_id),
-                    input_frame_path = VALUES(input_frame_path),
-                    inference_frame_path = VALUES(inference_frame_path),
-                    defect_list = VALUES(defect_list),
-                    is_accepted = VALUES(is_accepted);
-                """
                 
-                # Prepare data for insertion/update
-                data = (unique_id, part_id, input_path, pred_path, defect_str, is_accepted)
-                cursor.execute(query, data)
+                # Prepend the base directory to the paths
+                input_url = os.path.join(BASE_URL, input_paths[i].lstrip(os.sep).replace("\\", "/"))
+                pred_url = os.path.join(BASE_URL, pred_paths[i].lstrip(os.sep).replace("\\", "/"))
+                
+                # Append the constructed URLs to the lists
+                input_urls.append(input_url)
+                pred_urls.append(pred_url)
 
-                # Commit the transaction after each operation
-                connection.commit()
+            # Convert the defect list to a string
+            defect_str = ", ".join(defect_list)
+
+            # Get the current timestamp
+            timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+            # Insert or update data in the results table using "ON DUPLICATE KEY UPDATE"
+            query = """
+            INSERT INTO results (id, part_id, input_frame_path, inference_frame_path, defect_list, is_accepted, timestamp, station, part)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            ON DUPLICATE KEY UPDATE 
+                part_id = VALUES(part_id),
+                input_frame_path = VALUES(input_frame_path),
+                inference_frame_path = VALUES(inference_frame_path),
+                defect_list = VALUES(defect_list),
+                is_accepted = VALUES(is_accepted),
+                timestamp = VALUES(timestamp),
+                station = VALUES(station),
+                part = VALUES(part);
+            """
+
+            
+            # Prepare data for insertion/update
+            input_urls_str = ", ".join(input_urls)
+            pred_urls_str = ", ".join(pred_urls)
+            data = (unique_id, part_id, input_urls_str, pred_urls_str, defect_str, is_accepted, timestamp, station, part)
+            cursor.execute(query, data)
+
+            # Commit the transaction after each operation
+            connection.commit()
 
             print("Data successfully saved or updated in the database!")
 
@@ -405,5 +362,3 @@ def save_to_db(part_id, input_paths, pred_paths, defect_list, is_accepted):
         if connection.is_connected():
             cursor.close()
             connection.close()
-
-

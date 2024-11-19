@@ -1,0 +1,29 @@
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+
+# Log files
+*.log
+*.log.*
+
+# Virtual environment directories
+venv/
+env/
+
+# Shell script files
+*.sh
+
+# Temporary/Backup files
+*.swp
+*.swo
+*.bak
+*.tmp
+
+# Local directories (images, paths)
+local_images/
+local_images_path/
+
+# Python environment files
+Pipfile.lock
+pyenv/
