@@ -144,6 +144,16 @@ app.get('/api/parts', async (req, res) => {
     }
 });
 
+app.get('/api/users', async (req, res) => {
+    try {
+        const [parts] = await db.query('SELECT * FROM users');
+        res.json(parts);
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error fetching parts data' });
+    }
+});
+
 app.delete('/api/parts/:id', (req, res) => {
     const partId = req.params.id;    
     const sql = 'UPDATE products SET is_deleted = 1 WHERE product_id = ?';

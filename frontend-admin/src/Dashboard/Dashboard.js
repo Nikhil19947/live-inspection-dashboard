@@ -9,13 +9,11 @@ function LiveInspection() {
   const [cameraFeeds, setCameraFeeds] = useState(Array(6).fill(null));
   const [isStreaming, setIsStreaming] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [selectedVariant, setSelectedVariant] = useState('');
   const [uniquePartId, setUniquePartId] = useState('');
   const [videoSrc, setVideoSrc] = useState(null)
   const [defects, setDefects] = useState([]);
   const [summary, setSummary] = useState([]);
   const [imageUrls, setImageUrls] = useState(null);
-  const [progress, setProgress] = useState(33.33);
   const [accept, setaccept] = useState(false);
   const [parts, setParts] = useState([]);
   const [stations, setStations] = useState([]);
@@ -46,7 +44,7 @@ function LiveInspection() {
   const handleStart = async () => {
     const newUniquePartId = uuidv4();  // Generate a new unique part ID
     setUniquePartId(newUniquePartId);
-  
+
     try {
       const response = await fetch('http://127.0.0.1:5000/start_process', {
         method: 'POST',
@@ -59,8 +57,7 @@ function LiveInspection() {
         }),
       });
       const data = await response.json();
-      console.log('Response from backend:', data);
-  
+
       // Set video source with part_id, selectedProduct, and selectedStation included in the URL
       setVideoSrc(`http://127.0.0.1:5000/video_feed?part_id=${newUniquePartId}&part_name=${selectedProduct}&station=${selectedStation}`);
       setIsStreaming(true);
@@ -68,7 +65,7 @@ function LiveInspection() {
       console.error("Error starting process: ", error);
     }
   };
-  
+
 
 
   const handleStop = async () => {
@@ -89,22 +86,19 @@ function LiveInspection() {
       }
 
       const data = await response.json();
-      console.log('Response from backend:', data);
     } catch (error) {
       console.error("Error stopping process: ", error);
     } finally {
-      setIsLoading(false);
       setVideoSrc(null);
       setIsStreaming(false);
     }
     window.location.reload();
   };
 
+  const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
   const fetchInspectionData = async () => {
     try {
-      console.log('Starting inspection process');
-  
       // Fetch defects data
       const defectResponse = await fetch(`http://127.0.0.1:5002/api/defects?part_id=${uniquePartId}`);
       if (!defectResponse.ok) {
@@ -112,7 +106,7 @@ function LiveInspection() {
       }
       const defects = await defectResponse.json();
       setDefects(defects);
-  
+
       // Fetch summary data
       const summaryResponse = await fetch(`http://127.0.0.1:5002/api/summary?part_id=${uniquePartId}`);
       if (!summaryResponse.ok) {
@@ -120,72 +114,55 @@ function LiveInspection() {
       }
 
       const accept = await fetch(`http://127.0.0.1:5002/api/accept?part_id=${uniquePartId}`)
-      if(accept.ok){
-        setaccept(await accept.json());        
+      if (accept.ok) {
+        setaccept(await accept.json());
       }
-      
-      
+
       const summary = await summaryResponse.json();
       setSummary(summary);
-  
+
       // Fetch latest image URLs
       const imageResponse = await fetch(`http://127.0.0.1:5000/get_images?part_id=${uniquePartId}`);
       if (!imageResponse.ok) {
         throw new Error(`Error fetching images: ${imageResponse.status}`);
       }
       const imageData = await imageResponse.json();
-  
+
       if (imageData.image_urls && imageData.image_urls.length > 0) {
         setImageUrls([]); // Reset imageUrls state first
         setImageUrls(imageData.image_urls); // Update with new image URLs
       } else {
         console.error('No images found');
       }
-  
-      console.log('Inspection data updated successfully');
     } catch (error) {
       console.error('Error during inspection process:', error);
     }
+    finally {
+      setIsLoading(false);
+    }
   };
-  
+
   // UseEffect to handle the data fetching when the component is mounted or `isStreaming` changes
   useEffect(() => {
     if (isStreaming) {
       const intervalId = setInterval(() => {
         fetchInspectionData();
       }, 500); // Polling every 5 seconds (you can adjust the interval)
-  
+
       return () => clearInterval(intervalId); // Clear the interval on component unmount
     }
   }, [isStreaming, uniquePartId]);
-  
-  const handleStartStreaming = () => {
-    setIsStreaming(true); // Start the polling process
-  };
-  
+
+
   const handleCheck = async () => {
     setIsLoading(true);
-  
-    setProgress(33.33); 
-    let progressValue = 33.33;
-    const interval = setInterval(() => {
-      if (progressValue >= 100) {
-        clearInterval(interval); // Stop interval once progress is 100%
-      } else {
-        progressValue += 3.33; // Increment progress by 3.33% every 100ms
-        setProgress(progressValue);
-      }
-    }, 80);  
-  
+
     try {
-      console.log('Starting inspection process');
-  
       // Start inspection
       fetch(`http://127.0.0.1:5000/inspect_func`, {
         mode: 'no-cors',  // Adjust this as needed based on your CORS policy
       });
-  
-      console.log('Inspection data updated successfully');
+
     } catch (error) {
       console.error('Error during inspection process:', error);
     }
@@ -198,18 +175,10 @@ function LiveInspection() {
   const handleStationChange = (event) => {
     setSelectedStation(event.target.value);
   };
-  
+
   const acceptanceStatus = accept && accept.length > 0 ? accept[0] : null;
-const acceptanceLabel = acceptanceStatus && acceptanceStatus.is_accepted ? 'Accepted' : 'Rejected';
-const statusColor = acceptanceStatus && acceptanceStatus.is_accepted === 1 ? 'green' : 'red';
-
-if (acceptanceStatus) {
-    console.log('Status--------------------------------------------------', acceptanceStatus.is_accepted);
-} else {
-    console.log('Acceptance status is not available');
-}
-
-
+  const acceptanceLabel = acceptanceStatus && acceptanceStatus.is_accepted ? 'Accepted' : 'Rejected';
+  const statusColor = acceptanceStatus && acceptanceStatus.is_accepted === 1 ? 'green' : 'red';
 
   return (
     <div className="live-inspection-page">
@@ -227,24 +196,24 @@ if (acceptanceStatus) {
           {/* Moved Variant and Station Selectors below the logo */}
           <div className="selectors-buttons">
             <div className="selectors">
-            <select value={selectedProduct} onChange={handleProductChange}>
-        <option value="">Select Product</option>
-        {parts.map((part) => (
-          <option key={part.id} value={part.product_name}>
-            {part.product_name}
-          </option>
-        ))}
-      </select>
+              <select value={selectedProduct} onChange={handleProductChange}>
+                <option value="">Select Product</option>
+                {parts.map((part) => (
+                  <option key={part.id} value={part.product_name}>
+                    {part.product_name}
+                  </option>
+                ))}
+              </select>
 
-      {/* Station dropdown */}
-      <select value={selectedStation} onChange={handleStationChange}>
-        <option value="">Select Station</option>
-        {stations.map((station) => (
-          <option key={station.id} value={station.station_name}>
-            {station.station_name}
-          </option>
-        ))}
-      </select>
+              {/* Station dropdown */}
+              <select value={selectedStation} onChange={handleStationChange}>
+                <option value="">Select Station</option>
+                {stations.map((station) => (
+                  <option key={station.id} value={station.station_name}>
+                    {station.station_name}
+                  </option>
+                ))}
+              </select>
             </div>
             {/* Controls buttons */}
             <div className="controls-buttons">
@@ -252,6 +221,12 @@ if (acceptanceStatus) {
               <button type="button" className="btn btn-primary" onClick={handleCheck}>INSPECT</button>
               <button type="button" className="btn btn-danger" onClick={handleStop}>STOP</button>
             </div>
+            {isLoading && (
+            <button class="btn btn-primary" type="button" disabled style={{ marginLeft: '60px' }}>
+              <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+              Loading...
+            </button>
+            )}
           </div>
         </div>
         {/* Inspector, Batch ID, Camera Health, PLC Health */}
@@ -308,7 +283,7 @@ if (acceptanceStatus) {
                     style={{ width: '131px', marginTop: '10px' }}
                   />
                 ) : (
-                  <div className="placeholder" style={{ width: '131px', height: '110px',  backgroundColor: '#e0e0e0' }}>
+                  <div className="placeholder" style={{ width: '131px', height: '110px', backgroundColor: '#e0e0e0' }}>
                     {/* Optionally, you can add text or an icon to indicate an empty space */}
                     <span style={{ textAlign: 'center', display: 'block', lineHeight: '131px' }}>No Image</span>
                   </div>
@@ -323,52 +298,52 @@ if (acceptanceStatus) {
           {/* Defect classification table */}
           {/* Defect classification table */}
           <div className="defect-classification">
-  <h2 style={{ marginTop: '15px' }}>Defect Classification</h2>
-  <div className="table-container">
-    <table>
-      <thead>
-        <tr>
-          <th>Defect</th>
-          <th>Confidence Score</th>
-          <th>Percentage</th>
-        </tr>
-      </thead>
-      <tbody>
-        {defects.length > 0 ? (
-          defects.map((defect, i) => {
-            const defectData = defect.defect_list.split(', ').map(item => {
-              // Split each item by space, but ensure the last part is the score
-              const parts = item.split(' ');
-              const score = parseFloat(parts.pop()); // Take the last element as the score
-              const defectType = parts.join(' '); // Join the rest as the defect type
+            <h2 style={{ marginTop: '15px' }}>Defect Classification</h2>
+            <div className="table-container">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Defect</th>
+                    <th>Confidence Score</th>
+                    <th>Percentage</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {defects.length > 0 ? (
+                    defects.map((defect, i) => {
+                      const defectData = defect.defect_list.split(', ').map(item => {
+                        // Split each item by space, but ensure the last part is the score
+                        const parts = item.split(' ');
+                        const score = parseFloat(parts.pop()); // Take the last element as the score
+                        const defectType = parts.join(' '); // Join the rest as the defect type
 
-              // Calculate percentage only if the score is a valid number
-              const percentage = isNaN(score) ? 'N/A' : (score * 100).toFixed(2);
+                        // Calculate percentage only if the score is a valid number
+                        const percentage = isNaN(score) ? 'N/A' : (score * 100).toFixed(2);
 
-              return {
-                defect_type: defectType,
-                count: score.toFixed(2),
-                percentage: percentage
-              };
-            });
+                        return {
+                          defect_type: defectType,
+                          count: score.toFixed(2),
+                          percentage: percentage
+                        };
+                      });
 
-            return defectData.map((def, j) => (
-              <tr key={`${i}-${j}`}>
-                <td>{def.defect_type}</td>
-                <td>{def.count}</td>
-                <td>{def.percentage}%</td>
-              </tr>
-            ));
-          })
-        ) : (
-          <tr>
-            <td colSpan="3">Loading defects...</td>
-          </tr>
-        )}
-      </tbody>
-    </table>
-  </div>
-</div>
+                      return defectData.map((def, j) => (
+                        <tr key={`${i}-${j}`}>
+                          <td>{def.defect_type}</td>
+                          <td>{def.count}</td>
+                          <td>{def.percentage}%</td>
+                        </tr>
+                      ));
+                    })
+                  ) : (
+                    <tr>
+                      <td colSpan="3">Loading defects...</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
 
 
 
@@ -439,21 +414,24 @@ if (acceptanceStatus) {
       </div>
 
       <div className="bottom-section">
-        <div className="bottom-box-wrapper">
-          <div className="bottom-box">
-            {isLoading && (
-              <div className="progress" style={{ marginTop: '20px' }}>
-                <div
-                  className="progress-bar bg-info"
-                  role="progressbar"
-                  style={{ width: `${progress}%` }}  // Dynamically change width
-                  aria-valuenow={progress}  // Set current progress value
-                  aria-valuemin="0"
-                  aria-valuemax="100"
-                ></div>
-              </div>
-            )}
-          </div>
+  <div className="bottom-box-wrapper">
+    <div className="bottom-box">
+      {defects.length > 0 ? (
+        defects.map((defect, i) => {
+          const displayText = acceptanceLabel === 'Accepted' ? 'No Defect' : 'Mobile Phone';         
+
+          return (
+            <p key={i} style={{ marginTop:'-10px'}} >
+              Defect: {displayText}
+            </p>
+          );
+        })
+      ) : (
+        <p style={{marginTop:'-10px'}} >Loading defects...</p>
+      )}
+    </div>
+
+
           <div
             style={{
               color: statusColor,
@@ -461,9 +439,9 @@ if (acceptanceStatus) {
               backgroundColor: statusColor === 'green' ? 'lightgreen' : 'lightcoral',
               padding: '10px',
               borderRadius: '5px',
-              textAlign: 'center', 
-              height:'60px',
-              fontSize:'25px'
+              textAlign: 'center',
+              height: '60px',
+              fontSize: '25px'
             }}
           >
             {acceptanceLabel}

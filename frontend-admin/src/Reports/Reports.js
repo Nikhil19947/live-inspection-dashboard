@@ -10,8 +10,12 @@ import axios from 'axios';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCalendarAlt } from "@fortawesome/free-solid-svg-icons";
 import { format } from "date-fns";
+import { useNavigate } from 'react-router-dom';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 const InspectionPage = () => {
+  const navigate = useNavigate();
   const gaugeTexts = [
     "Wall Thickness",
     "Melt Temperature",
@@ -47,6 +51,35 @@ const InspectionPage = () => {
       });
   }, []);
   
+  const exportToExcel = () => {
+    if (filteredData.length === 0) {
+      alert("No data to export!");
+      return;
+    }
+  
+    // Prepare data for Excel
+    const excelData = filteredData.map(item => ({
+      "Part Description": item.part || "",
+      "Part Number": item.id || "",
+      "Model Number": "M1", // Replace with actual value if needed
+      "Operator": "Operator", // Replace with actual value if needed
+      "Shift": item.shift || "",
+      "Station": item.station || "",
+      "Batch": "B1", // Replace with actual value if needed
+      "Status": item.is_accepted === 0 ? "REJECTED" : "ACCEPTED",
+      "Timestamp": item.timestamp ? format(new Date(item.timestamp), "yyyy-MM-dd HH:mm:ss") : "N/A",
+    }));
+  
+    // Create a workbook and worksheet
+    const worksheet = XLSX.utils.json_to_sheet(excelData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Inspection Details");
+  
+    // Generate Excel file and trigger download
+    const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+    const data = new Blob([excelBuffer], { type: "application/octet-stream" });
+    saveAs(data, "Inspection_Reports.xlsx");
+  };
 
   const handlePageChange = (newPage) => {
     if (newPage > 0 && newPage <= totalPages) {
@@ -85,6 +118,20 @@ const filteredData = data.filter((item) => {
     const end = Math.min(totalPages, start + pageRange - 1);
     return Array.from({ length: end - start + 1 }, (_, index) => start + index);
   };
+
+  const handleViewDetails = async (partNumber) => {
+    try {
+        const response = await axios.get(`http://localhost:5000/set_id`, {
+            params: { part_number: partNumber },
+        });
+        navigate('/detailed_view');
+        console.log("Fetched Details: ", response.data);
+    } catch (error) {
+        console.error("Error fetching details: ", error);
+    }
+};
+const latestTimestamp = filteredData.length > 0 ? filteredData[0].timestamp : null;
+const lastUpdatedTime = latestTimestamp ? format(new Date(latestTimestamp), "yyyy-MM-dd HH:mm:ss") : "N/A";
 
 
   return (
@@ -125,7 +172,7 @@ const filteredData = data.filter((item) => {
           <div style={{ width: '100%' }}>
             <div className="title">
               <h1 className="live-inspection-title">Live Inspection Details</h1>
-              <header style={{ textAlign: 'center', color: '#828587', marginBottom: '10px' }}>Last Updated:</header>
+              <header style={{ textAlign: 'center', color: '#828587', marginBottom: '10px' }}>Last Updated: {lastUpdatedTime}</header>
 
               <div style={{ display: 'flex', justifyContent: 'space-around', flexWrap: 'wrap', marginBottom: '5px' }}>
                 {gaugeTexts.map((item, index) => (
@@ -193,14 +240,13 @@ const filteredData = data.filter((item) => {
                   />
                 </div>
 
-                <div className="dropdown">
-                  <i className="fas fa-download download-icon"></i>
-                  <select className="right" style={{ width: '110px', paddingLeft: '30px' }}>
-                    <option>Export</option>
-                    <option>Pdf</option>
-                    <option>Excel</option>
-                  </select>
-                </div>
+                <button
+                  className="btn btn-primary"
+                  onClick={exportToExcel}
+                  style={{ padding: '10px', borderRadius: '5px', height:'43px', width:'200px' }}
+                >
+                  Export to Excel
+                </button>
               </div>
             </div>
 
@@ -241,7 +287,15 @@ const filteredData = data.filter((item) => {
                     </td>
                     <td>{item.timestamp ? format(new Date(item.timestamp), "yyyy-MM-dd HH:mm:ss") : "N/A"}</td>
                     <td>
-                      <a href='/detailed_view' style={{textDecoration:'none'}}>View Details</a>
+                      <a
+                        href="#"
+                        style={{ textDecoration: 'none' }}
+                        onClick={(e) => {
+                          handleViewDetails(item.id);
+                        }}
+                      >
+                        View Details
+                      </a>
                     </td>
                   </tr>
                 ))}

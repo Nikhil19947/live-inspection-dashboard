@@ -1,136 +1,24 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import GaugeChart from "react-gauge-chart";
 import name from '../assets/FactreeWriting.png'
 import logo from '../assets/FactreeLogo.png'
 import "@fortawesome/fontawesome-free/css/all.min.css";
 
 const InspectionPage = () => {
-    const data = [
-        {
-            user: 'John Doe',
-            email: 'johndoe@gmail.com',
-            role: 'Super Admin',
-            status: 'active',
-        },
-        {
-            user: 'Alice',
-            email: 'alice@gmail.com',
-            role: 'Operator',
-            status: 'inactive',
-        },
-        {
-            user: 'Bob',
-            email: 'bob@gmail.com',
-            role: 'Admin',
-            status: 'active',
-        },
-        {
-            user: 'John Doe',
-            email: 'johndoe@gmail.com',
-            role: 'Super Admin',
-            status: 'active',
-        },
-        {
-            user: 'Alice',
-            email: 'alice@gmail.com',
-            role: 'Operator',
-            status: 'inactive',
-        },
-        {
-            user: 'Bob',
-            email: 'bob@gmail.com',
-            role: 'Admin',
-            status: 'active',
-        },
-        {
-            user: 'John Doe',
-            email: 'johndoe@gmail.com',
-            role: 'Super Admin',
-            status: 'active',
-        },
-        {
-            user: 'Alice',
-            email: 'alice@gmail.com',
-            role: 'Operator',
-            status: 'inactive',
-        },
-        {
-            user: 'Bob',
-            email: 'bob@gmail.com',
-            role: 'Admin',
-            status: 'active',
-        },
-        {
-            user: 'John Doe',
-            email: 'johndoe@gmail.com',
-            role: 'Super Admin',
-            status: 'active',
-        },
-        {
-            user: 'Alice',
-            email: 'alice@gmail.com',
-            role: 'Operator',
-            status: 'inactive',
-        },
-        {
-            user: 'Bob',
-            email: 'bob@gmail.com',
-            role: 'Admin',
-            status: 'active',
-        },
-        {
-            user: 'John Doe',
-            email: 'johndoe@gmail.com',
-            role: 'Super Admin',
-            status: 'active',
-        },
-        {
-            user: 'Alice',
-            email: 'alice@gmail.com',
-            role: 'Operator',
-            status: 'inactive',
-        },
-        {
-            user: 'Bob',
-            email: 'bob@gmail.com',
-            role: 'Admin',
-            status: 'active',
-        },
-        {
-            user: 'John Doe',
-            email: 'johndoe@gmail.com',
-            role: 'Super Admin',
-            status: 'active',
-        },
-        {
-            user: 'Alice',
-            email: 'alice@gmail.com',
-            role: 'Operator',
-            status: 'inactive',
-        },
-        {
-            user: 'Bob',
-            email: 'bob@gmail.com',
-            role: 'Admin',
-            status: 'active',
-        },
-    ];
-
-    const gaugeTexts = [
-        "Wall Thickness",
-        "Melt Temperature",
-        "Cooling Rate",
-        "Blow Pressure",
-        "Parison Control",
-        "Cycle Time",
-        "Melt Flow Index",
-        "Extrusion Speed",
-    ];
-
+    const [data, setData] = useState([]);
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 7;
     const totalPages = Math.ceil(data.length / itemsPerPage);
     const pageRange = 5;
+
+    useEffect(() => {
+        fetch('http://localhost:5002/api/users')
+            .then(response => response.json())
+            .then(data => {
+                setData(data);
+            })
+            .catch(error => console.error('Error fetching parts:', error));
+    }, []);
 
     const handlePageChange = (newPage) => {
         if (newPage > 0 && newPage <= totalPages) {
@@ -269,14 +157,12 @@ const InspectionPage = () => {
                                 {paginatedData.map((item, index) => (
                                     <tr key={index}>
                                         <td><input type="checkbox" /></td>
-                                        <td>{item.user}</td>
-                                        <td>{item.email}</td>
+                                        <td>{item.first_name}</td>
+                                        <td>{item.username}</td>
                                         <td style={{ color: item.role === "Super Admin" ? "red" : item.role === "Admin" ? "purple" : "green", fontWeight: "bold" }}>
                                             {item.role}
                                         </td>
-                                        <td style={{ color: item.status === "inactive" ? "grey" : "green", fontWeight: "bold" }}>
-                                            {item.status}
-                                        </td>
+                                        <td>active</td>
                                         <td>
                                             <button
                                                 className="btn btn-sm"

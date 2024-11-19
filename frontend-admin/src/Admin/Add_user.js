@@ -158,14 +158,29 @@ const AddUserPage = () => {
                                 </div>
                                 <div className="col-md-6">
                                     <label className="labels">Role</label>
-                                    <input 
-                                        type="text" 
-                                        className="form-control" 
-                                        placeholder="role" 
-                                        name="role"
-                                        value={formData.role}
-                                        onChange={handleInputChange}
-                                    />
+                                    <div style={{ position: 'relative' }}>
+                                        <select
+                                            style={{
+                                                appearance: 'none',
+                                                WebkitAppearance: 'none',
+                                                MozAppearance: 'none',
+                                                paddingRight: '30px',
+                                                backgroundImage: 'url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%2012%2012%22%3E%3Cpath%20d%3D%22M6%2010L1%205h10L6%2010z%22%20fill%3D%22%23666%22%2F%3E%3C%2Fsvg%3E")',
+                                                backgroundRepeat: 'no-repeat',
+                                                backgroundPosition: 'right 10px center',
+                                                backgroundSize: '12px 12px',
+                                            }}
+                                            className="form-control"
+                                            name="role"
+                                            value={formData.role}
+                                            onChange={handleInputChange}
+                                        >
+                                            <option value="">Select Role</option>
+                                            <option value="Superadmin">Superadmin</option>
+                                            <option value="Admin">Admin</option>
+                                            <option value="Operator">Operator</option>
+                                        </select>
+                                    </div>
                                 </div>
                                 <div className="col-md-6">
                                     <label className="labels">Shift</label>

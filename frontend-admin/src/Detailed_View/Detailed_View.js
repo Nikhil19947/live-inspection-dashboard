@@ -1,12 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import name from '../assets/FactreeWriting.png'
 import logo from '../assets/FactreeLogo.png'
 import { Modal } from 'react-bootstrap';
 import { AiOutlineEye } from 'react-icons/ai';
+import axios from 'axios'
 
 const InspectionPage = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
+  const [details, setDetails] = useState({});
+  const [imageUrls, setImageUrls] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleImageClick = (image) => {
     setSelectedImage(image);
@@ -17,6 +22,37 @@ const InspectionPage = () => {
     setShowModal(false);
     setSelectedImage(null);
   };
+
+  useEffect(() => {
+    const fetchDetails = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await axios.get("http://localhost:5000/get_details");
+        setDetails(response.data.details);
+        const imageResponse = await fetch(`http://127.0.0.1:5000/detailed_view_img`);
+        if (!imageResponse.ok) {
+          throw new Error(`Error fetching images: ${imageResponse.status}`);
+        }
+        const imageData = await imageResponse.json();
+
+        if (imageData.image_urls && imageData.image_urls.length > 0) {
+          setImageUrls([]); // Reset imageUrls state first
+          setImageUrls(imageData.image_urls); // Update with new image URLs
+        } else {
+          console.error('No images found');
+        }
+
+      } catch (err) {
+        setError("Failed to fetch details");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchDetails();
+  }, []);
 
   return (
     <div style={{ display: 'flex' }}>
@@ -54,7 +90,7 @@ const InspectionPage = () => {
       <div style={{ padding: "20px", marginLeft: '20px' }}>
         <div style={{ width: '100%' }}>
           <h1 className="live-inspection-title">Detailed View</h1>
-          <div className="dropdown" style={{ marginLeft: '1240px', marginBottom: '10px' }}>
+          <div className="dropdown" style={{ marginLeft: '1270px', marginBottom: '10px' }}>
             <i className="fas fa-download download-icon"></i>
             <select className="right" style={{ width: '110px', paddingLeft: '30px' }}>
               <option>Export</option>
@@ -62,144 +98,131 @@ const InspectionPage = () => {
               <option>Excel</option>
             </select>
           </div>
-          <div className="title" style={{ display: 'flex', justifyContent: 'space-between', width: '1350px', height: '230px' }}>
-            <div style={{ flex: '0.8' }}>
-              <h2 style={{ marginBottom: '10px', color: '#828587' }}>Status: Rejected</h2>
-              <h2 style={{ color: '#828587' }}>Part Number</h2>
-              <h2 style={{ marginBottom: '10px', color: '#828587' }}>GB003HTG123</h2>
-              <h2 style={{ color: '#828587' }}>Part Description</h2>
-              <h2 style={{ marginBottom: '10px', color: '#828587' }}>Goldie 3000ml Short Angular Bottle</h2>
+
+          <div className="title" style={{ display: 'flex', justifyContent: 'space-between', width: '1380px', height: '230px' }}>
+            <div style={{ flex: '0.8', fontSize: '15.5px' }}> {/* Reduced font size to 12px */}
+              <h2 style={{ marginBottom: '10px', color: '#828587', fontSize: '15.5px' }}>Status: {details.is_accepted ? 'Accepted' : 'Rejected'}</h2>
+              <h2 style={{ color: '#828587', fontSize: '15.5px' }}>Part Number</h2>
+              <h2 style={{ marginBottom: '10px', color: '#828587', fontSize: '15.5px' }}>{details.id || 'loading...'}</h2>
+              <h2 style={{ color: '#828587', fontSize: '15.5px' }}>Part Description</h2>
+              <h2 style={{ marginBottom: '10px', color: '#828587', fontSize: '15.5px' }}>{details.part || 'loading...'}</h2>
             </div>
 
-            <div style={{ flex: '0.8' }}>
-              <h2 style={{ marginBottom: '10px', color: '#828587' }}>Station: 1</h2>
-              <h2 style={{ color: '#828587' }}>Model Number</h2>
-              <h2 style={{ marginBottom: '10px', color: '#828587' }}>GB003HTG123</h2>
-              <h2 style={{ color: '#828587' }}>Shift</h2>
-              <h2 style={{ marginBottom: '10px', color: '#828587', marginLeft: '15px' }}>A</h2>
+            <div style={{ flex: '0.8', fontSize: '15.5px' }}> {/* Reduced font size to 12px */}
+              <h2 style={{ marginBottom: '10px', color: '#828587', fontSize: '15.5px' }}>Station: {details.station}</h2>
+              <h2 style={{ color: '#828587', fontSize: '15.5px' }}>Model Number</h2>
+              <h2 style={{ marginBottom: '10px', color: '#828587', fontSize: '15.5px' }}>{details.model_number || 'M1'}</h2>
+              <h2 style={{ color: '#828587', fontSize: '15.5px' }}>Shift</h2>
+              <h2 style={{ marginBottom: '10px', color: '#828587', marginLeft: '0px', fontSize: '15.5px' }}>{details.shift || 'S1'}</h2>
             </div>
-            <div style={{ flex: '0.8' }}>
-              <h2 style={{ marginBottom: '10px', color: '#828587' }}>Batch Number</h2>
-              <h2 style={{ marginBottom: '10px', color: '#828587' }}>GB003HTG123</h2>
-              <h2 style={{ color: '#828587' }}>Inspection Timestamp</h2>
-              <h2 style={{ marginBottom: '10px', color: '#828587' }}>29-Oct-2024 05:03:01</h2>
-              <h2 style={{ color: '#828587' }}>Defect List</h2>
-              <h2 style={{ marginBottom: '10px', color: '#828587' }}>Flash and Pinhole</h2>
+
+            <div style={{ flex: '0.8', fontSize: '12px' }}> {/* Reduced font size to 12px */}
+              <h2 style={{ marginBottom: '10px', color: '#828587', fontSize: '15.5px' }}>Batch Number</h2>
+              <h2 style={{ marginBottom: '10px', color: '#828587', fontSize: '15.5px' }}>{details.batch_number || 'B1'}</h2>
+              <h2 style={{ color: '#828587', fontSize: '15.5px' }}>Inspection Timestamp</h2>
+              <h2 style={{ marginBottom: '10px', color: '#828587', fontSize: '15.5px' }}>{details.timestamp || 'loading...'}</h2>
+              <h2 style={{ color: '#828587', fontSize: '15.5px' }}>Defect List</h2>
+              <h2 style={{ marginBottom: '10px', color: '#828587', fontSize: '15.5px' }}>{details.defect_list || 'loading...'}</h2>
             </div>
+
             <div style={{ flex: '1.6' }}>
-              <h2 style={{ color: '#828587' }}>Metrology Readings</h2>
-              <table style={{ width: '100%', maxHeight: '200px', overflowY: 'auto', fontSize: '16px' }}>
+              <h2 style={{ color: '#828587', fontSize: '14px' }}>Metrology Readings</h2>
+              <table style={{ width: '100%', maxHeight: '200px', overflowY: 'auto', fontSize: '14px' }}>
                 <thead>
                   <tr>
-                    <th style={{ padding: '5px 10px' }}>Parameter</th>
-                    <th style={{ padding: '5px 10px' }}>Measured (mm)</th>
-                    <th style={{ padding: '5px 10px' }}>Specification (mm)</th>
+                    <th style={{ padding: '5px 10px', fontSize: '14px' }}>Parameter</th>
+                    <th style={{ padding: '5px 10px', fontSize: '14px' }}>Measured (mm)</th>
+                    <th style={{ padding: '5px 10px', fontSize: '14px' }}>Specification (mm)</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
-                    <td style={{ padding: '5px 10px' }}>Height</td>
-                    <td style={{ padding: '5px 10px' }}>250</td>
-                    <td style={{ padding: '5px 10px' }}>240</td>
+                    <td style={{ padding: '5px 10px', fontSize: '14px' }}>Height</td>
+                    <td style={{ padding: '5px 10px', fontSize: '14px' }}>{details.height || 'N/A'}</td>
+                    <td style={{ padding: '5px 10px', fontSize: '14px' }}>240</td>
                   </tr>
                   <tr>
-                    <td style={{ padding: '5px 10px' }}>Neck Width</td>
-                    <td style={{ padding: '5px 10px' }}>50</td>
-                    <td style={{ padding: '5px 10px' }}>48</td>
+                    <td style={{ padding: '5px 10px', fontSize: '14px' }}>Neck Width</td>
+                    <td style={{ padding: '5px 10px', fontSize: '14px' }}>{details.neck_width || 'N/A'}</td>
+                    <td style={{ padding: '5px 10px', fontSize: '14px' }}>48</td>
                   </tr>
                   <tr>
-                    <td style={{ padding: '5px 10px' }}>Base Width</td>
-                    <td style={{ padding: '5px 10px' }}>80</td>
-                    <td style={{ padding: '5px 10px' }}>75</td>
+                    <td style={{ padding: '5px 10px', fontSize: '14px' }}>Base Width</td>
+                    <td style={{ padding: '5px 10px', fontSize: '14px' }}>{details.base_width || 'N/A'}</td>
+                    <td style={{ padding: '5px 10px', fontSize: '14px' }}>75</td>
                   </tr>
                   <tr>
-                    <td style={{ padding: '5px 10px' }}>Neck Outer Diameter</td>
-                    <td style={{ padding: '5px 10px' }}>55</td>
-                    <td style={{ padding: '5px 10px' }}>52</td>
+                    <td style={{ padding: '5px 10px', fontSize: '14px' }}>Neck Outer Diameter</td>
+                    <td style={{ padding: '5px 10px', fontSize: '14px' }}>{details.neck_outer_diameter || 'N/A'}</td>
+                    <td style={{ padding: '5px 10px', fontSize: '14px' }}>52</td>
                   </tr>
                   <tr>
-                    <td style={{ padding: '5px 10px' }}>Neck Lock Length</td>
-                    <td style={{ padding: '5px 10px' }}>30</td>
-                    <td style={{ padding: '5px 10px' }}>28</td>
+                    <td style={{ padding: '5px 10px', fontSize: '14px' }}>Neck Lock Length</td>
+                    <td style={{ padding: '5px 10px', fontSize: '14px' }}>{details.neck_lock_length || 'N/A'}</td>
+                    <td style={{ padding: '5px 10px', fontSize: '14px' }}>28</td>
                   </tr>
                 </tbody>
               </table>
             </div>
-
           </div>
+
         </div>
-        <div style={{ width: '1350px', marginTop: '20px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '20px' }}>
-            {[{ label: 'No defect' }, { label: 'Defect' }, { label: 'No defect' }].map((item, index) => (
-              <div key={index} style={{
-                position: 'relative',
-                backgroundColor: 'white',
-                width: '32%',
-                height: '162px',
-                borderRadius: '8px',
-                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-                padding: '20px',
-              }}>
-                {item.label}
-                <img src={logo} alt="Inspection" style={{ width: '270px', height: '130px', marginLeft: '50px' }} />
-                <AiOutlineEye
-                  size={24}
-                  style={{
-                    position: 'absolute',
-                    top: '10px',
-                    right: '10px',
-                    color: 'rgba(0, 0, 0, 0.6)',
-                    cursor: 'pointer'
-                  }}
-                  onClick={() => handleImageClick(logo)}
-                />
+        <div className="camera-thumbnails" style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between' }}>
+          {imageUrls && imageUrls.length > 0 ? (
+            imageUrls.map((image, index) => (
+              <div
+                key={index}
+                className="camera-thumbnail"
+                style={{
+                  width: '28%',
+                  marginBottom: '20px',
+                  height: '160px',
+                  display: 'flex',
+                  justifyContent: 'center',
+                }}
+              >
+                <div style={{ position: 'relative' }}>
+                  <img
+                    src={image}
+                    alt={`Image ${index + 1}`}
+                    className="image-box-img"
+                    style={{ width: '360px', height: '140px' }}
+                    onClick={() => handleImageClick(image)}
+                  />
+                  <button
+                    onClick={() => handleImageClick(image)}
+                    style={{
+                      position: 'absolute',
+                      top: '10px',
+                      right: '10px',
+                      backgroundColor: 'transparent',
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontSize: '20px',
+                      color: '#fff',
+                    }}
+                  >
+                    <AiOutlineEye />
+                  </button>
+                </div>
               </div>
-            ))}
-          </div>
-          <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-            {[{ label: 'Defect' }, { label: 'No defect' }, { label: 'Defect' }].map((item, index) => (
-              <div key={index} style={{
-                position: 'relative',
-                backgroundColor: 'white',
-                width: '32%',
-                height: '162px',
-                borderRadius: '8px',
-                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
-                padding: '20px',
-              }}>
-                {item.label}
-                <img src={logo} alt="Inspection" style={{ width: '270px', height: '130px', marginLeft: '50px' }} />
-                <AiOutlineEye
-                  size={24}
-                  style={{
-                    position: 'absolute',
-                    top: '10px',
-                    right: '10px',
-                    color: 'rgba(0, 0, 0, 0.6)',
-                    cursor: 'pointer'
-                  }}
-                  onClick={() => handleImageClick(logo)}
-                />
-              </div>
-            ))}
-          </div>
+            ))
+          ) : (
+            <div>Loading Images...</div>
+          )}
+        </div>
 
-          <Modal show={showModal} onHide={handleCloseModal} centered>
-            <Modal.Body style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              backgroundColor: '#f8f9fa',
-              padding: '20px',
-              borderRadius: '8px',
-              width: '650px',
-              height: '650px',
-              marginLeft: '-150px'
-            }}>
-              <img src={selectedImage} alt="Larger view" style={{ width: '100%', height: '100%', objectFit: 'contain' }} />
-            </Modal.Body>
-          </Modal>
-        </div></div></div>
+        {/* Modal for larger view */}
+        <Modal show={showModal} onHide={handleCloseModal} size="lg">
+          <Modal.Header closeButton>
+            <Modal.Title>View Image</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <img src={selectedImage} alt="Selected Image" style={{ width: '100%' }} />
+          </Modal.Body>
+        </Modal>
+      </div>
+    </div>
   );
 };
 
