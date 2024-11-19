@@ -124,8 +124,6 @@ The Flask server will start running, typically at `http://127.0.0.1:5000`.
 
 ---
 
-This replaces the previous backend setup instructions using Node.js if you're implementing Flask instead. Let me know if you want further changes or need additional instructions!
-
 ## Database Setup
 
 To run the project, you'll need to set up a MySQL database and create the necessary tables. Follow these steps:
