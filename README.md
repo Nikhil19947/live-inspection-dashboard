@@ -8,7 +8,6 @@ This project is a real-time inspection dashboard designed for monitoring product
 2. [Installation](#installation)
 3. [Running the Project](#running-the-project)
 4. [Database Setup](#database-setup)
-5. [License](#license)
 
 ---
 
