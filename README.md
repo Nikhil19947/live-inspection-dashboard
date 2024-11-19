@@ -79,6 +79,53 @@ This will start the backend servers for user authentication and inspection data 
 
 ---
 
+## Backend Setup with Flask
+
+To set up and run the Flask backend, follow these steps:
+
+### 1. Create a Virtual Environment
+
+Navigate to the `backend` directory and create a virtual environment for your Flask application:
+
+```bash
+python -m venv venv
+```
+
+### 2. Activate the Virtual Environment
+
+Activate the virtual environment:
+
+- **Windows**:
+  ```bash
+  venv\Scripts\activate
+  ```
+- **Mac/Linux**:
+  ```bash
+  source venv/bin/activate
+  ```
+
+### 3. Install Dependencies
+
+Install the required dependencies using the `requirements.txt` file:
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Run the Flask Application
+
+Run the Flask app (`app1.py`) to start the backend server:
+
+```bash
+python app1.py
+```
+
+The Flask server will start running, typically at `http://127.0.0.1:5000`.
+
+---
+
+This replaces the previous backend setup instructions using Node.js if you're implementing Flask instead. Let me know if you want further changes or need additional instructions!
+
 ## Database Setup
 
 To run the project, you'll need to set up a MySQL database and create the necessary tables. Follow these steps:
