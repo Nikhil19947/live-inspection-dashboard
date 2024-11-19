@@ -1,9 +1,13 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import name from '../assets/FactreeWriting.png'
 import logo from '../assets/FactreeLogo.png'
 import { Modal } from 'react-bootstrap';
 import { AiOutlineEye } from 'react-icons/ai';
 import axios from 'axios'
+
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+
 
 const InspectionPage = () => {
   const [showModal, setShowModal] = useState(false);
@@ -12,6 +16,39 @@ const InspectionPage = () => {
   const [imageUrls, setImageUrls] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  const pdfRef = useRef(null);
+const downloadPDF = () => {
+  const input = pdfRef.current;
+
+  html2canvas(input, { 
+    scrollX: 0, 
+    scrollY: -window.scrollY, 
+    useCORS: true, 
+    scale: 2,  
+    width: input.scrollWidth,  
+    height: input.scrollHeight,
+  }).then((canvas) => {
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF('p', 'mm', 'a4', true);
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+    const imgWidth = canvas.width;
+    const imgHeight = canvas.height;
+    const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+    const imgX = (pdfWidth - imgWidth * ratio) / 2;
+    const imgY = 30; 
+    pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
+    
+    if (imgHeight * ratio > pdfHeight) {
+      pdf.addPage();
+      pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
+    }
+
+    pdf.save("inspection_report.pdf");
+  });
+}
+
 
   const handleImageClick = (image) => {
     setSelectedImage(image);
@@ -87,19 +124,26 @@ const InspectionPage = () => {
         </div>
       </nav>
 
-      <div style={{ padding: "20px", marginLeft: '20px' }}>
+      <div style={{ padding: "20px", marginLeft: '80px' }} ref={pdfRef}>
+      <button className="btn download-button" style={{ position: 'absolute', backgroundColor: '#007BFF', color: 'white', borderRadius: '5px', padding: '6px 12px', fontSize: '14px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '5px', border: 'none', cursor: 'pointer' }} onClick={downloadPDF}>
+  <i className="fa fa-download" style={{ fontSize: '16px' }}></i>Download PDF
+</button>
         <div style={{ width: '100%' }}>
           <h1 className="live-inspection-title">Detailed View</h1>
           <div className="dropdown" style={{ marginLeft: '1270px', marginBottom: '10px' }}>
+          
+
             <i className="fas fa-download download-icon"></i>
             <select className="right" style={{ width: '110px', paddingLeft: '30px' }}>
               <option>Export</option>
               <option>Pdf</option>
               <option>Excel</option>
             </select>
+           
           </div>
 
-          <div className="title" style={{ display: 'flex', justifyContent: 'space-between', width: '1380px', height: '230px' }}>
+          <div className="title" ref={pdfRef}
+          style={{ display: 'flex', justifyContent: 'space-between', width: '1380px', height: '230px' }}>
             <div style={{ flex: '0.8', fontSize: '15.5px' }}> {/* Reduced font size to 12px */}
               <h2 style={{ marginBottom: '10px', color: '#828587', fontSize: '15.5px' }}>Status: {details.is_accepted ? 'Accepted' : 'Rejected'}</h2>
               <h2 style={{ color: '#828587', fontSize: '15.5px' }}>Part Number</h2>
