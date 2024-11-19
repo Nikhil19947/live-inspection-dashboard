@@ -1,6 +1,3 @@
-Here’s the complete README in markdown format based on the information you provided:
-
-```markdown
 # Live Inspection Dashboard
 
 This project is a real-time inspection dashboard designed for monitoring product quality and defects using AI/ML models. The project includes a frontend admin dashboard for live monitoring and a backend system that manages product inspections, user accounts, and reporting.
