@@ -216,8 +216,8 @@ function LiveInspection() {
             {/* Controls buttons */}
             <div className="controls-buttons">
               <button type="button" className="btn btn-primary" onClick={handleStart} disabled={isStreaming}>START</button>
-              <button type="button" className="btn btn-primary" onClick={handleCheck}>INSPECT</button>
-              <button type="button" className="btn btn-danger" onClick={handleStop}>STOP</button>
+              <button type="button" className="btn btn-primary" onClick={handleCheck} disabled={!isStreaming}>INSPECT</button>
+              <button type="button" className="btn btn-danger" onClick={handleStop} disabled={!isStreaming}>STOP</button>
             </div>
             {isLoading && (
             <button class="btn btn-primary" type="button" disabled style={{ marginLeft: '60px' }}>
