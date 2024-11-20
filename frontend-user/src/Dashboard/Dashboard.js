@@ -197,8 +197,8 @@ function LiveInspection() {
           <img src={name} alt="Factree" />
         </div>
         <h1 className="live-inspection-title">Live Inspection</h1>
-        <button onClick={handleLogout} style={{height:'40px', fontSize:'17px', marginRight:'-110px'}} className="logout-button">
-          <img style={{height:'35px'}} src={logout}></img>
+        <button onClick={handleLogout} style={{height:'40px', fontSize:'17px', marginRight:'-110px', borderRadius:'25px'}} className="logout-button">
+          <img style={{height:'35px', borderRadius:'200px'}} src={logout}></img>
         </button>
       </header>
       {/* Top bar for selection and controls */}

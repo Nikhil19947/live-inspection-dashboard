@@ -258,6 +258,26 @@ body, html {
   border: 1px solid #090909;
   height: 130px;
 }
+/* .camera-thumbnails {
+  flex: 1;
+  display: grid;
+  grid-template-columns: (auto-fit, minmax(131px, 1fr)); 
+  grid-gap: 10px; 
+  height: 10px; 
+  gap: 5px;
+  align-items: center;
+}
+
+.camera-thumbnail {
+  background-color: #f0f0f0;
+  padding: 5px;
+  text-align: center;
+  border: 1px solid #090909;
+  height: 130px;
+  display: flex; 
+  justify-content: center;
+
+} */
 
 .side-panel {
   max-height: 500px;
