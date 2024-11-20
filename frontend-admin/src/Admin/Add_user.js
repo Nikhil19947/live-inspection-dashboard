@@ -176,7 +176,7 @@ const AddUserPage = () => {
                                             onChange={handleInputChange}
                                         >
                                             <option value="">Select Role</option>
-                                            <option value="Superadmin">Superadmin</option>
+                                            <option value="Super Admin">Super Admin</option>
                                             <option value="Admin">Admin</option>
                                             <option value="Operator">Operator</option>
                                         </select>

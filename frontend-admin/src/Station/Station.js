@@ -74,20 +74,17 @@ const InspectionPage = () => {
                         </div>
                         <div class="offcanvas-body">
                             <ul class="navbar-nav justify-content-end flex-grow-1 pe-3">
-                                <li class="nav-item">
-                                    <a href="/reports" class="btn btn-outline-secondary w-100 mb-3" style={{ borderRadius: '8px', marginTop: '20px' }}>Live Inspection Screen</a>
+                            <li class="nav-item">
+                                    <a href="/dashboard" class="btn btn-outline-secondary w-100 mb-3" style={{ borderRadius: '8px', marginTop: '20px' }}>Live Inspection Dashboard</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/detailed_view" class="btn btn-outline-secondary w-100 mb-3" style={{ borderRadius: '8px' }}>Insights</a>
+                                    <a href="/reports" class="btn btn-outline-secondary w-100 mb-3" style={{ borderRadius: '8px' }}>Live Inspection Details</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/detailed_view" class="btn btn-outline-secondary w-100 mb-3" style={{ borderRadius: '8px' }}>Reports</a>
+                                    <a href="/admin" class="btn btn-outline-secondary w-100 mb-3" style={{ borderRadius: '8px' }}>User Management</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="/detailed_view" class="btn btn-outline-secondary w-100 mb-3" style={{ borderRadius: '8px' }}>Part Settings</a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="/admin" class="btn btn-outline-secondary w-100 mb-3" style={{ borderRadius: '8px' }}>User management</a>
+                                    <a href="/parts" class="btn btn-outline-secondary w-100 mb-3" style={{ borderRadius: '8px' }}>Part Management</a>
                                 </li>
                                 <li class="nav-item" style={{ marginTop: '360px' }}>
                                     <a href="/socials-login" class="btn btn-outline-secondary w-100 mb-3" style={{ borderRadius: '8px' }}>Community</a>

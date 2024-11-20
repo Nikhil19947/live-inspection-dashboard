@@ -48,7 +48,7 @@ function App() {
 
       if (response.status === 200) {
         localStorage.setItem('token', data.token);
-        navigate('/dashboard');
+        navigate('/reports');
       } else {
         setError(data.message || 'Invalid credentials. Please try again.');
       }

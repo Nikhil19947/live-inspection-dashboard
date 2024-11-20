@@ -109,9 +109,6 @@ const downloadPDF = () => {
                 <li class="nav-item">
                   <a href="/reports" class="btn btn-outline-secondary w-100 mb-3" style={{ borderRadius: '8px', marginTop: '20px' }}>Live Inspection Details</a>
                 </li>
-                <li class="nav-item">
-                  <a href="/detailed_view" class="btn btn-outline-secondary w-100 mb-3" style={{ borderRadius: '8px' }}>Detailed View</a>
-                </li>
                 <li class="nav-item" style={{ marginTop: '400px' }}>
                   <a href="/socials-login" class="btn btn-outline-secondary w-100 mb-3" style={{ borderRadius: '8px' }}>Community</a>
                 </li>
@@ -124,26 +121,16 @@ const downloadPDF = () => {
         </div>
       </nav>
 
-      <div style={{ padding: "20px", marginLeft: '80px' }} ref={pdfRef}>
-      <button className="btn download-button" style={{ position: 'absolute', backgroundColor: '#007BFF', color: 'white', borderRadius: '5px', padding: '6px 12px', fontSize: '14px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '5px', border: 'none', cursor: 'pointer' }} onClick={downloadPDF}>
-  <i className="fa fa-download" style={{ fontSize: '16px' }}></i>Download PDF
-</button>
+      <div style={{ padding: "20px", marginLeft: '20px' }} ref={pdfRef}>
         <div style={{ width: '100%' }}>
           <h1 className="live-inspection-title">Detailed View</h1>
-          <div className="dropdown" style={{ marginLeft: '1270px', marginBottom: '10px' }}>
-          
-
-            <i className="fas fa-download download-icon"></i>
-            <select className="right" style={{ width: '110px', paddingLeft: '30px' }}>
-              <option>Export</option>
-              <option>Pdf</option>
-              <option>Excel</option>
-            </select>
-           
+          <div className="dropdown" style={{ marginLeft: '1230px', marginBottom: '20px' }}>
+            <button className="btn download-button" style={{ width:'150px', position: 'absolute', backgroundColor: '#007BFF', color: 'white', borderRadius: '5px', padding: '6px 12px', fontSize: '14px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '5px', border: 'none', cursor: 'pointer' }} onClick={downloadPDF}>
+              <i className="fa fa-download" style={{ fontSize: '16px' }}></i>Download PDF
+            </button>
           </div>
 
-          <div className="title" ref={pdfRef}
-          style={{ display: 'flex', justifyContent: 'space-between', width: '1380px', height: '230px' }}>
+          <div className="title" style={{ display: 'flex', justifyContent: 'space-between', width: '1380px', height: '230px' }}>
             <div style={{ flex: '0.8', fontSize: '15.5px' }}> {/* Reduced font size to 12px */}
               <h2 style={{ marginBottom: '10px', color: '#828587', fontSize: '15.5px' }}>Status: {details.is_accepted ? 'Accepted' : 'Rejected'}</h2>
               <h2 style={{ color: '#828587', fontSize: '15.5px' }}>Part Number</h2>
@@ -228,7 +215,7 @@ const downloadPDF = () => {
                 <div style={{ position: 'relative' }}>
                   <img
                     src={image}
-                    alt={`Image ${index + 1}`}
+                    alt={"Image ${index + 1}"}
                     className="image-box-img"
                     style={{ width: '360px', height: '140px' }}
                     onClick={() => handleImageClick(image)}
