@@ -1,0 +1,417 @@
+/* Reset margins and paddings for a full-page layout */
+body, html {
+  height: 100vh;
+  box-sizing: border-box;
+  background-color: #f4f5f6;
+}
+
+/* Styling for the Live Inspection header */
+.inspection-header {
+  display: flex; /* Use flexbox for layout */
+  justify-content: space-between; /* Space out logo and title */
+  align-items: center; /* Center vertically */
+  font-size: 24px;
+  font-weight: bold;
+  padding: 0px;
+  margin-left: 20px;
+  background-color: #ffffff;
+  margin-top: 5px;
+  width: 90%; /* Ensure it takes the full width */
+}
+
+.live-inspection-page {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  box-sizing: border-box;
+  background-color: #ffffff;
+}
+
+
+.factree-section {
+  display: flex;
+  flex-direction: column; /* Stack elements vertically */
+  align-items: center; /* Center logo and buttons */
+  margin-left: 15px;
+}
+
+.selectors-buttons {
+  margin-top: 10px; /* Add spacing between logo and selectors */
+  display: flex;
+  justify-content: center;
+}
+
+.selectors {
+  margin-right: 10px; /* Adjust spacing between selectors and buttons */
+}
+
+.factree-logo img:last-child { /* Select the second image (name) */
+  margin-left: 5px; /* Adjust the value as needed */
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between; /* Space out the items in the bar */
+  align-items: center; /* Center vertically */
+  padding: 0px; /* Add some padding */
+  background-color: #ffffff; /* Background color */
+  border-radius: 0; /* No border radius */
+  width: 100%; /* Full width */
+}
+
+.loading-buttons {
+  display: flex; /* Flex display for alignment */
+  align-items: center; /* Center the button vertically */
+  margin-right: 80px;
+}
+
+
+.live-inspection-title {
+  flex-grow: 1; /* Allow this element to take available space */
+  text-align: center; /* Center text */
+  font-size: 24px; /* Adjust font size if needed */
+  color: #828587;
+  margin-bottom: 10px; /* Add space below the title */
+}
+
+.factree-logo {
+  display: flex;
+  align-items: center;
+}
+
+.fname {
+  font-size: 20px;
+  height: 40px;
+  padding-right: 10px;
+  margin-top: 10px;
+  margin-left: 5px;
+}
+
+/* Combine selectors and buttons in one section */
+.selectors-buttons {
+  display: flex; /* Use flexbox to align items */
+  align-items: center; /* Center items vertically */
+  /* background-color: #f4f5f6; */
+}
+
+.selectors {
+  display: flex;
+  flex-direction: column; /* Stack selects vertically */
+  margin-right: 20px; /* Space between selectors and buttons */
+}
+
+.selectors select {
+  margin-bottom: 5px;
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  width: 250px;
+  height: 40px; /* Increase height */
+}
+
+
+.controls-buttons {
+  display: flex; /* Align buttons in a row */
+  gap: 10px; /* Space between buttons */
+}
+
+.controls-buttons button {
+  padding: 10px;
+  /* background-color: #4caf50; */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  height: 85px; /* Maintain consistent height */
+  width: 80px; /* Maintain consistent width */
+  margin-left: 20px;
+  margin-top: 0px;
+}
+
+.controls-buttons button.check-btn {
+  background-color: #9575cd; /* Different background for check button */
+}
+
+.controls-buttons button.start-btn {
+  background-color: #9575cd; /* Different background for start button */
+}
+
+.controls-buttons button.stop-btn {
+  background-color: #e85858; /* Different background for stop button */
+}
+
+.controls-section {
+  display: flex; /* Use flexbox for layout */
+  width: 527px;
+  justify-content: space-between; /* Space between the two boxes */
+  margin: 20px; /* Add some margin around the section */
+  margin-right:15px;
+  gap: 20px;
+  height:90px;
+}
+
+.status-info, .health-statuses {
+  background-color: #f8f9fa; /* Light background color */
+  padding: 15px; /* Padding inside the boxes */
+  border-radius: 5px; /* Rounded corners */
+  width: 48%; /* Make boxes occupy equal width */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+}
+
+.status-item {
+  margin-bottom: 10px; /* Spacing between status items */
+  display: flex; /* Make status items a flex container */
+  align-items: center; /* Center items vertically */
+}
+
+.health-status1 {
+  display: flex; /* Flexbox for health statuses */
+  align-items: center; /* Center items vertically */
+  margin-bottom: 10px; /* Spacing between health statuses */
+}
+
+.health-status2 {
+  display: flex; /* Flexbox for health statuses */
+  align-items: center; /* Center items vertically */
+  margin-bottom: 10px; /* Spacing between health statuses */
+}
+
+.health-status-label {
+  margin-right: 10px; /* Space between label and status circle */
+}
+
+.status-circle1 {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: green; /* Color for the circle */
+  margin-left: 30px; /* Space from the text */
+}
+
+.status-circle2 {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: green; /* Color for the circle */
+  margin-left: 30px; /* Space from the text */
+}
+
+
+/* Main inspection area */
+.main-inspection-area {
+  display: flex;
+  gap: 5px; /* Reduced gap between live feed and bottom elements */
+  padding: 5px; /* Reduced padding */
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.camera-feed {
+  flex: 2;
+  background-color: #ffffff;
+  padding: 10px;
+  border: 1px solid #000000;
+  border-radius: 5px;
+  width: 100px;
+  height: 400px;
+}
+
+.camera-header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+}
+
+.camera-display {
+  position: relative;
+}
+
+.camera-display img {
+  width: 100%;
+  border-radius: 10px;
+}
+
+.inspecting-box {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  padding: 5px;
+  background-color: rgba(120, 0, 255, 0.7);
+  color: white;
+  font-weight: bold;
+}
+
+.camera-thumbnails {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  height: 10px;
+  gap: 5px;
+}
+
+.camera-thumbnail {
+  background-color: #f0f0f0;
+  padding: 10px;
+  text-align: center;
+  border: 1px solid #090909;
+  height: 130px;
+}
+
+.side-panel {
+  max-height: 500px;
+  flex: 1.5;
+  display: flex;
+  flex-direction: column;
+  gap: 0px;
+  margin-top: -20px;
+  margin-right: 3px;
+}
+
+/* Style for table containers to add scrollbars */
+.table-container {
+  max-height: calc(3 * 49px); 
+  overflow-y: auto;
+  padding: 0px;
+  border: 1px solid #ccc;
+  border-radius: 0px;
+}
+.table-container table tbody tr {
+  height: 40px; /* Ensure consistent row height for calculation */
+}
+/* Style for the headings in the side panel */
+.side-panel h3 {
+  margin-bottom: 0px;
+}
+
+/* Table styles */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+th, td {
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+
+th {
+  background-color: #f4f5f6;
+}
+
+.error {
+  color: red;
+}
+
+.pass {
+  color: green;
+}
+.status-message {
+  margin-top: 10px;
+  padding: 10px;
+  text-align: center;
+  font-weight: bold;
+  border-radius: 5px;
+}
+
+.status-message.accepted {
+  background-color: #d4edda; /* Light green background */
+  color: #155724; /* Dark green text */
+}
+
+.factree-logo img {
+  height: 20px; 
+  margin-bottom: 10px;
+}
+
+
+.status-message.rejected {
+  background-color: #f8d7da; /* Light red background */
+  color: #721c24; /* Dark red text */
+}
+
+/* New bottom box styles */
+.bottom-section {
+  display: flex; 
+  justify-content: space-between; 
+  padding: 10px;
+}
+
+/* Wrap the two boxes in a vertical layout */
+.bottom-box-wrapper {
+  display: flex;
+  flex-direction: column; /* Stack the boxes vertically */
+}
+
+.bottom-box {
+  padding: 10px;
+  margin-top: -80px;
+  margin-bottom: 10px; /* Add space between the two boxes */
+  /* background-color: #e10c0c; */
+  text-align: center;
+  border: 1px solid hsl(120, 5%, 96%);
+  border-radius: 5px;
+  overflow: hidden;
+  width: 637px;
+  height: 55px;
+}
+
+.bottom-box p {
+  margin: 0;
+  font-size: 16px;
+  color: #333;
+  padding: 20px;
+}
+
+.bottom-box-new{
+  margin: 0px;
+  margin-bottom: 10px; /* Add space between the two boxes */
+  background-color: #f4f5f6;
+  text-align: center;
+  border: 1px solid hsl(120, 5%, 96%);
+  border-radius: 5px;
+  overflow: hidden;
+  width: 724px;
+  height: 50px;
+}
+
+.additional-box {
+  width: 310px; /* Set the width */
+  max-height: 130px; /* Limit the height of the box */
+  margin-top: -78px;
+  margin-left: 7px;
+  padding: 10px; /* Reduce padding */
+  background-color: #ffffff; /* Background color for the box */
+  border-radius: 5px; /* Rounded corners */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: shadow effect */
+  display: flex; /* Use flexbox for layout */
+  flex-direction: column; /* Stack items vertically */
+  align-items: flex-start; /* Align items to the left */  
+  justify-content: flex-start; /* Align items to the top */
+  margin-right: 470px;
+  gap: 1px;
+}
+
+.additional-text {
+  margin-bottom: 0px; /* Remove default margin of <p> */
+  font-size: 16px; /* Keep font size */
+  margin-top: 5px;
+}
+
+strong p.additional-text {
+  font-size: 16px; /* Optional: Slightly larger font for bolded text */
+}
+
+.progress {
+  height: 20px;
+  width: 100%;
+}
+
+.progress-bar {
+  height: 100%;
+  transition: width 0.05s ease-out; 
+}
+
+

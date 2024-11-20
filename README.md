@@ -8,6 +8,7 @@ This project is a real-time inspection dashboard designed for monitoring product
 2. [Installation](#installation)
 3. [Running the Project](#running-the-project)
 4. [Database Setup](#database-setup)
+5. [License](#license)
 
 ---
 
@@ -76,51 +77,6 @@ node dashboard.js
 ```
 
 This will start the backend servers for user authentication and inspection data management.
-
----
-
-## Backend Setup with Flask
-
-To set up and run the Flask backend, follow these steps:
-
-### 1. Create a Virtual Environment
-
-Navigate to the `backend` directory and create a virtual environment for your Flask application:
-
-```bash
-python -m venv venv
-```
-
-### 2. Activate the Virtual Environment
-
-Activate the virtual environment:
-
-- **Windows**:
-  ```bash
-  venv\Scripts\activate
-  ```
-- **Mac/Linux**:
-  ```bash
-  source venv/bin/activate
-  ```
-
-### 3. Install Dependencies
-
-Install the required dependencies using the `requirements.txt` file:
-
-```bash
-pip install -r requirements.txt
-```
-
-### 4. Run the Flask Application
-
-Run the Flask app (`app1.py`) to start the backend server:
-
-```bash
-python app1.py
-```
-
-The Flask server will start running, typically at `http://127.0.0.1:5000`.
 
 ---
 
