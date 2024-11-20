@@ -13,17 +13,23 @@ in_id = ""
 
 app = Flask(__name__)
 # CORS(app)
-# CORS(app, resources={r"/start_process": {"origins": "http://localhost:3000"}})
-CORS(app, origins=["http://localhost:3000"])
+CORS(app, supports_credentials=True)
+CORS(app, origins=["http://localhost:3000", "http://localhost:3001"])
 app.config['JWT_SECRET_KEY'] = 'your_secret_key_here'  
 jwt = JWTManager(app)  
 
 @app.after_request
 def add_cors_headers(response):
-    response.headers['Access-Control-Allow-Origin'] = 'http://localhost:3000'
+    origin = request.headers.get('Origin')
+    allowed_origins = ['http://localhost:3000', 'http://localhost:3001']
+
+    if origin in allowed_origins:
+        response.headers['Access-Control-Allow-Origin'] = origin  
+
     response.headers['Access-Control-Allow-Headers'] = 'Content-Type,Authorization'
     response.headers['Access-Control-Allow-Methods'] = 'GET,PUT,POST,DELETE,OPTIONS'
     return response
+
 
 @app.route('/set_id')
 def set_id():
@@ -164,39 +170,58 @@ def serve_image(filename):
 @app.route('/detailed_view_img', methods=['GET'])
 def detailed_view_img():
     connection = mysql.connector.connect(
-            host='localhost',  
-            user='root',
-            password='root_pass813',
-            database='dummydb'
-        )
+        host='localhost',
+        user='root',
+        password='root_pass813',
+        database='dummydb'
+    )
 
     if connection.is_connected():
         cursor = connection.cursor(buffered=True)
-        query = "SELECT part_id FROM results WHERE id = %s"
+        # Query the part_id and inference_frame_path
+        query = "SELECT part_id, inference_frame_path FROM results WHERE id = %s"
         cursor.execute(query, (in_id,))
-        part_id = cursor.fetchall()
-    part_id = part_id[0][0]
-    try:
-        if not part_id:
-            return jsonify({'error': 'part_id is required'}), 400
+        result = cursor.fetchall()
 
-        # List to hold image paths for the specific part_id
+    try:
+        if not result:
+            return jsonify({'error': 'No data found for the given ID'}), 404
+
+        part_id = result[0][0]
+        inference_frame_path = result[0][1]
+
+        if not part_id or not inference_frame_path:
+            return jsonify({'error': 'Invalid part_id or inference_frame_path'}), 400
+
+        # Extract the capture folder (e.g., 'capture_1') from the `inference_frame_path`
+        capture_folder = None
+        path_parts = inference_frame_path.split('/')
+        for part in path_parts:
+            if part.startswith('capture_'):
+                capture_folder = part
+                break
+
+        if not capture_folder:
+            return jsonify({'error': 'Capture folder not found in inference_frame_path'}), 400
+
+        # List to hold image paths for the specific part_id and capture folder
         part_images = []
 
-        # Walk through the directory and find images specific to the part_id
+        # Walk through the directory and find images specific to the part_id and capture folder
         for root, dirs, files in os.walk(BASE_DIRECTORY):
-            for file in files:
-                if file.endswith('pf.jpg') and part_id in root:
-                    # Get the full path of the image
-                    full_image_path = os.path.join(root, file)
-                    part_images.append({
-                        'path': full_image_path,
-                        'modified_time': os.path.getmtime(full_image_path)
-                    })
+            if part_id in root and capture_folder in root:  # Match both part_id and capture folder
+                for file in files:
+                    if file.endswith('pf.jpg'):
+                        # Get the full path of the image
+                        full_image_path = os.path.join(root, file)
+                        part_images.append({
+                            'path': full_image_path,
+                            'modified_time': os.path.getmtime(full_image_path)
+                        })
 
-        # If no images found for this part_id
+        # If no images found for this part_id and capture folder
         if not part_images:
-            return jsonify({'error': f'No images found for part_id: {part_id}'}), 404
+            return jsonify({'error': f'No images found for part_id: {part_id} and capture: {capture_folder}'}), 404
 
         # Sort images by modification time in descending order (latest images first)
         part_images.sort(key=lambda x: x['modified_time'], reverse=True)
@@ -214,6 +239,11 @@ def detailed_view_img():
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
+
+    finally:
+        if connection.is_connected():
+            connection.close()
+
 
     
 @app.route('/start_inspect', methods=['POST'])
@@ -267,11 +297,6 @@ def start_process():
 @app.route('/stop_process', methods=['POST'])
 @cross_origin(origin='http://localhost:3000')
 def stop_process():
-    # try:
-    #     data = request.get_json()
-    #     print("--------------------------------------------Received:", data)
-    # except Exception as e:
-    #     print(f"-------------------------------------------Error occurred: {str(e)}") 
     return stop_process_util()
 
 @app.route('/get_analysis', methods=['GET'])
@@ -281,22 +306,4 @@ def get_analysis():
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0')
-
-
-# app = Flask(__name__)
-
-
-# @app.route('/video_feed')
-# def video_feed():
-#     """Route to serve the video feed."""
-#     return Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
-
-# @app.route('/recognized_text')
-# def get_recognized_text():
-#     """Route to serve recognized text."""
-#     Response(generate_frames(), mimetype='multipart/x-mixed-replace; boundary=frame')
-#     return jsonify(recognized_texts)
-
-# if __name__ == '__main__':
-#     app.run(debug=True, host='0.0.0.0')
 
