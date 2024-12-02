@@ -50,7 +50,7 @@ def get_details():
         connection = mysql.connector.connect(
             host='localhost',  # Change as per your database configuration
             user='root',
-            password='root_pass813',
+            password='root',
             database='dummydb'
         )
 
@@ -113,7 +113,7 @@ def video_feed():
     return Response(generate(part_id=part_id, part_name = part_name, part_station = part_station), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
-BASE_DIRECTORY = r'C:\Users\Skanda J\Downloads\BE_Dev\BE_Dev\inspections\inspection_images'
+BASE_DIRECTORY = r'C:\Users\vaish\internship\Intern\live-inspection-dashboard\inspections'
 
 
 @app.route('/get_images', methods=['GET'])
@@ -172,7 +172,7 @@ def detailed_view_img():
     connection = mysql.connector.connect(
         host='localhost',
         user='root',
-        password='root_pass813',
+        password='root',
         database='dummydb'
     )
 
@@ -244,7 +244,6 @@ def detailed_view_img():
         if connection.is_connected():
             connection.close()
 
-
     
 @app.route('/start_inspect', methods=['POST'])
 def start_inspect():
@@ -271,8 +270,6 @@ def login_user():
 @app.route('/logout', methods=['POST'])
 def logout_user():
     return logout()
-
-
 
 @app.route('/add_part', methods=['POST'])
 def add_parts():

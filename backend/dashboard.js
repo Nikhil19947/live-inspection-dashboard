@@ -34,7 +34,7 @@ app.use(cors({
 const db = mysql.createPool({
     host: 'localhost',        
     user: 'root',            
-    password: 'root_pass813', 
+    password: 'root', 
     database: 'dummydb' 
 });
 

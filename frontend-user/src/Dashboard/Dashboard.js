@@ -19,7 +19,9 @@ function LiveInspection() {
   const [parts, setParts] = useState([]);
   const [stations, setStations] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState('');
-  const [selectedStation, setSelectedStation] = useState('')
+  const [selectedStation, setSelectedStation] = useState('');
+  // Add this to your existing useState declarations at the top
+  const [statusColor, setStatusColor] = useState('#800080'); // Purple as default
 
   const thumbnailsRefs = useRef(Array(6).fill(null));
   useEffect(() => {
@@ -67,7 +69,26 @@ function LiveInspection() {
     }
   };
 
+  // Update the state definition
+  const [metrologyData, setMetrologyData] = useState([
+    { parameter: 'Height', measured: 0, specification: '50.00 ±2', isPass: null },
+    { parameter: 'Width', measured: 0, specification: '50.00 ±2', isPass: null },
+    { parameter: 'Dia', measured: 0, specification: '50.00 ±2', isPass: null }
+  ]);
 
+  const handleInspect = () => {
+    // Update the metrology data with new random values and pass/fail logic
+    const updatedData = metrologyData.map((item) => {
+      const randomMeasured = parseFloat((Math.random() * 100).toFixed(2)); // Random measured value
+      const isPass = Math.abs(randomMeasured - 50) <= 2; // Check if within 50.00 ±2 specification
+      return {
+        ...item,
+        measured: randomMeasured,
+        isPass,
+      };
+    });
+    setMetrologyData(updatedData);
+  };
 
   const handleStop = async () => {
     try {
@@ -154,7 +175,22 @@ function LiveInspection() {
     }
   }, [isStreaming, uniquePartId]);
 
+  
+  const acceptanceStatus = accept && accept.length > 0 ? accept[0] : null;
+  const acceptanceLabel = acceptanceStatus === null ? 'WAITING FOR INSPECTION' :   acceptanceStatus.is_accepted ? 'Accepted' : 'Rejected';
 
+  // Update the useEffect for color changes
+  useEffect(() => {
+    if (acceptanceStatus === null) {
+      setStatusColor('#800080'); // Purple for WAITING
+    } else if (acceptanceStatus.is_accepted === 1) {
+      setStatusColor('green'); // Green for ACCEPTED
+    } else {
+      setStatusColor('red'); // Red for REJECTED
+    }
+  }, [acceptanceStatus]);
+  
+    
   const handleCheck = async () => {
     setIsLoading(true);
 
@@ -184,9 +220,10 @@ function LiveInspection() {
     window.location.href = "/";
   };
 
-  const acceptanceStatus = accept && accept.length > 0 ? accept[0] : null;
-  const acceptanceLabel = acceptanceStatus && acceptanceStatus.is_accepted ? 'Accepted' : 'Rejected';
-  const statusColor = acceptanceStatus && acceptanceStatus.is_accepted === 1 ? 'green' : 'red';
+  const handleBoth =()=>{
+    handleCheck();
+    handleInspect();
+  };
 
   return (
     <div className="live-inspection-page">
@@ -229,7 +266,7 @@ function LiveInspection() {
             {/* Controls buttons */}
             <div className="controls-buttons">
               <button type="button" className="btn btn-primary" onClick={handleStart} disabled={isStreaming}>START</button>
-              <button type="button" className="btn btn-primary" onClick={handleCheck} disabled={!isStreaming}>INSPECT</button>
+              <button type="button" className="btn btn-primary" onClick={handleBoth} disabled={!isStreaming}>INSPECT</button>
               <button type="button" className="btn btn-danger" onClick={handleStop} disabled={!isStreaming}>STOP</button>
             </div>
             {isLoading && (
@@ -266,8 +303,6 @@ function LiveInspection() {
             </div>
           </div>
         </div>
-
-
       </div>
 
       {/* Main inspection area */}
@@ -357,7 +392,6 @@ function LiveInspection() {
           </div>
 
 
-
           {/* Metrology table */}
           <div className="metrology">
             <h2 style={{ marginTop: '5px' }}>Metrology</h2>
@@ -424,12 +458,12 @@ function LiveInspection() {
         </div>
       </div>
 
-      <div className="bottom-section">
-  <div className="bottom-box-wrapper">
-    <div className="bottom-box">
-      {defects.length > 0 ? (
+   <div className="bottom-section">
+        <div className="bottom-box-wrapper">
+        <div className="bottom-box">
+    {defects.length > 0 ? (
         defects.map((defect, i) => {
-          const displayText = acceptanceLabel === 'Accepted' ? 'No Defect' : 'Mobile Phone';         
+          const displayText = acceptanceLabel === 'ACCEPTED' ? 'No Defect' : 'Mobile Phone';         
 
           return (
             <p key={i} style={{ marginTop:'-10px'}} >
@@ -442,30 +476,29 @@ function LiveInspection() {
       )}
     </div>
 
-
           <div
             style={{
-              color: statusColor,
+              color: 'white',
               fontWeight: 'bold',
-              backgroundColor: statusColor === 'green' ? 'lightgreen' : 'lightcoral',
+              backgroundColor: statusColor,
               padding: '10px',
               borderRadius: '5px',
               textAlign: 'center',
               height: '60px',
+              width: '755px',
               fontSize: '25px'
             }}
           >
             {acceptanceLabel}
           </div>
         </div>
+      </div>
         <div className="additional-box">
           <strong><p className="additional-text">OCR</p></strong>
           <p className="additional-text">Batch&nbsp;&nbsp;&nbsp;-</p>
           <p className="additional-text">Exp&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-</p>
         </div>
       </div>
-
-    </div>
   );
 }
 

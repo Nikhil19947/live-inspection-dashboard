@@ -4,6 +4,8 @@ import logo from '../assets/FactreeLogo.png';
 import name from '../assets/Factree Writing.png'
 import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
+import logout from'../assets/logout.png'
+
 
 function LiveInspection() {
   const [cameraFeeds, setCameraFeeds] = useState(Array(6).fill(null));
@@ -18,7 +20,9 @@ function LiveInspection() {
   const [parts, setParts] = useState([]);
   const [stations, setStations] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState('');
-  const [selectedStation, setSelectedStation] = useState('')
+  const [selectedStation, setSelectedStation] = useState('');
+  const [showWarning, setShowWarning] = useState(false);
+  const [statusColor, setStatusColor] = useState('#800080'); // Purple as default
 
   const thumbnailsRefs = useRef(Array(6).fill(null));
   useEffect(() => {
@@ -42,7 +46,13 @@ function LiveInspection() {
   }, []);
 
   const handleStart = async () => {
-    const newUniquePartId = uuidv4();  // Generate a new unique part ID
+    // Check if both product and station are selected
+    if (!selectedProduct || !selectedStation) {
+      setShowWarning(true);
+      return;
+    }
+
+    const newUniquePartId = uuidv4();
     setUniquePartId(newUniquePartId);
 
     try {
@@ -64,6 +74,10 @@ function LiveInspection() {
     } catch (error) {
       console.error("Error starting process: ", error);
     }
+  };
+
+  const handleCloseWarning = () => {
+    setShowWarning(false);
   };
 
   const handleStop = async () => {
@@ -175,8 +189,49 @@ function LiveInspection() {
   };
 
   const acceptanceStatus = accept && accept.length > 0 ? accept[0] : null;
-  const acceptanceLabel = acceptanceStatus && acceptanceStatus.is_accepted ? 'Accepted' : 'Rejected';
-  const statusColor = acceptanceStatus && acceptanceStatus.is_accepted === 1 ? 'green' : 'red';
+  const acceptanceLabel = acceptanceStatus === null ? 'WAITING FOR INSPECTION' : acceptanceStatus.is_accepted === 1 ? 'ACCEPTED' : 'REJECTED';
+ // Add this useEffect to handle color changes
+  useEffect(() => {
+    if (acceptanceStatus === null) {
+      setStatusColor('#800080'); // Purple for WAITING
+    } else if (acceptanceStatus.is_accepted === 1) {
+      setStatusColor('green'); // Green for ACCEPTED
+    } else {
+      setStatusColor('red'); // Red for REJECTED
+    }
+  }, [acceptanceStatus]);
+
+  const [metrologyData, setMetrologyData] = useState(
+    Array(20).fill({
+      measured: 0,
+      isPass: null, // null to indicate no result yet
+    })
+  );
+
+  const handleInspect = () => {
+    // Update the metrology data with new random values and pass/fail logic
+    const updatedData = metrologyData.map(() => {
+      const randomMeasured = parseFloat((Math.random() * 100).toFixed(2)); // Random measured value
+      const isPass = Math.abs(randomMeasured - 50) <= 2; // Check if within 50.00 ±2 specification
+      return {
+        measured: randomMeasured,
+        isPass,
+      };
+    });
+    setMetrologyData(updatedData); // Update state with new data
+  };
+  
+  const handleBoth = () => {
+    handleCheck(); // Ensure this is a function and properly defined
+    handleInspect(); // Ensure this is a function and properly defined
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("authToken");
+    sessionStorage.clear();
+    window.history.replaceState(null, "", "/");
+    window.location.href = "/";
+  };
 
   return (
     <div className="live-inspection-page">
@@ -187,6 +242,9 @@ function LiveInspection() {
           <img src={name} alt="Factree" />
         </div>
         <h1 className="live-inspection-title">Live Inspection</h1>
+        <button onClick={handleLogout} style={{height:'40px', fontSize:'17px', marginRight:'-110px', borderRadius:'25px'}} className="logout-button">
+          <img style={{height:'35px', borderRadius:'200px'}} src={logout}></img>
+        </button>
       </header>
       {/* Top bar for selection and controls */}
       <div className="top-bar">
@@ -216,8 +274,8 @@ function LiveInspection() {
             {/* Controls buttons */}
             <div className="controls-buttons">
               <button type="button" className="btn btn-primary" onClick={handleStart} disabled={isStreaming}>START</button>
-              <button type="button" className="btn btn-primary" onClick={handleCheck} disabled={!isStreaming}>INSPECT</button>
-              <button type="button" className="btn btn-danger" onClick={handleStop} disabled={!isStreaming}>STOP</button>
+              <button type="button" className="btn btn-primary" onClick={handleBoth}  disabled={!isStreaming}>INSPECT</button>
+              <button type="button" className="btn btn-danger"  onClick={handleStop}   disabled={!isStreaming}>STOP</button>
             </div>
             {isLoading && (
             <button class="btn btn-primary" type="button" disabled style={{ marginLeft: '60px' }}>
@@ -253,8 +311,6 @@ function LiveInspection() {
             </div>
           </div>
         </div>
-
-
       </div>
 
       {/* Main inspection area */}
@@ -262,6 +318,7 @@ function LiveInspection() {
         {/* Camera and defect section */}
         <div className="camera-feed">
           <strong><span>LIVE</span></strong>
+          
           <div className="camera-header">
             <img src={videoSrc} style={{ width: '700px', height: '350px' }} />
           </div>
@@ -343,8 +400,6 @@ function LiveInspection() {
             </div>
           </div>
 
-
-
           {/* Metrology table */}
           <div className="metrology">
             <h2 style={{ marginTop: '5px' }}>Metrology</h2>
@@ -359,16 +414,20 @@ function LiveInspection() {
                   </tr>
                 </thead>
                 <tbody>
-                  {['Height', 'Width', 'Dia'].map((parameter, i) => (
-                    <tr key={i}>
-                      <td>{parameter}</td>
-                      <td>{(Math.random() * 100).toFixed(2)} mm</td>
-                      <td>50.00 ±2</td>
-                      <td className={Math.random() > 0.5 ? 'pass' : 'error'}>
-                        {Math.random() > 0.5 ? '✔' : '✖'}
-                      </td>
-                    </tr>
-                  ))}
+                {['Height', 'Width', 'Dia'].map((parameter, i) => (
+                  <tr key={i}>
+                    <td>{parameter}</td>
+                    <td>{metrologyData[i]?.measured?.toFixed(2) || '0'} mm</td>
+                    <td>50.00 ±2</td>
+                    <td className={metrologyData[i]?.isPass === true ? 'pass' : 'error'}>
+                      {metrologyData[i]?.isPass === null
+                        ? ''
+                        : metrologyData[i]?.isPass
+                        ? '✔'
+                        : '✖'}
+                    </td>
+                  </tr>
+                ))}
                 </tbody>
               </table>
             </div>
@@ -406,18 +465,15 @@ function LiveInspection() {
               </table>
             </div>
           </div>
-
-
         </div>
       </div>
 
       <div className="bottom-section">
-  <div className="bottom-box-wrapper">
-    <div className="bottom-box">
-      {defects.length > 0 ? (
+      <div className="bottom-box-wrapper">
+      <div className="bottom-box">
+    {defects.length > 0 ? (
         defects.map((defect, i) => {
-          const displayText = acceptanceLabel === 'Accepted' ? 'No Defect' : 'Mobile Phone';         
-
+          const displayText = acceptanceLabel === 'ACCEPTED' ? 'No Defect' : 'Mobile Phone';         
           return (
             <p key={i} style={{ marginTop:'-10px'}} >
               Defect: {displayText}
@@ -429,29 +485,41 @@ function LiveInspection() {
       )}
     </div>
 
-
           <div
             style={{
-              color: statusColor,
+              color: 'white',
               fontWeight: 'bold',
-              backgroundColor: statusColor === 'green' ? 'lightgreen' : 'lightcoral',
+              backgroundColor: statusColor,
               padding: '10px',
               borderRadius: '5px',
               textAlign: 'center',
               height: '60px',
+              width: '755px',
               fontSize: '25px'
             }}
           >
             {acceptanceLabel}
           </div>
         </div>
+
+
         <div className="additional-box">
           <strong><p className="additional-text">OCR</p></strong>
           <p className="additional-text">Batch&nbsp;&nbsp;&nbsp;-</p>
           <p className="additional-text">Exp&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-</p>
         </div>
       </div>
-
+      {showWarning && (
+      <div className="warning-overlay">
+        <div className="warning-content">
+          <h3>Warning!</h3>
+          <p>Please select both Product and Station before starting.</p>
+          <button onClick={handleCloseWarning} className="btn btn-primary">
+            OK
+          </button>
+        </div>
+      </div>
+    )}
     </div>
   );
 }

@@ -258,10 +258,11 @@ body, html {
   border: 1px solid #090909;
   height: 130px;
 }
+
 /* .camera-thumbnails {
   flex: 1;
   display: grid;
-  grid-template-columns: (auto-fit, minmax(131px, 1fr)); 
+  grid-template-columns: (auto-fit, minmax(131px, 1fr));
   grid-gap: 10px; 
   height: 10px; 
   gap: 5px;
@@ -274,7 +275,7 @@ body, html {
   text-align: center;
   border: 1px solid #090909;
   height: 130px;
-  display: flex; 
+  display: flex;
   justify-content: center;
 
 } */
@@ -297,6 +298,7 @@ body, html {
   border: 1px solid #ccc;
   border-radius: 0px;
 }
+
 .table-container table tbody tr {
   height: 40px; /* Ensure consistent row height for calculation */
 }
@@ -374,7 +376,7 @@ th {
   border: 1px solid hsl(120, 5%, 96%);
   border-radius: 5px;
   overflow: hidden;
-  width: 637px;
+  width: 757px;
   height: 55px;
 }
 
@@ -393,12 +395,12 @@ th {
   border: 1px solid hsl(120, 5%, 96%);
   border-radius: 5px;
   overflow: hidden;
-  width: 724px;
-  height: 50px;
+  width: 735px;
+  height: 350px;
 }
 
 .additional-box {
-  width: 310px; /* Set the width */
+  width: 610px; /* Set the width */
   max-height: 130px; /* Limit the height of the box */
   margin-top: -78px;
   margin-left: 7px;
@@ -410,7 +412,7 @@ th {
   flex-direction: column; /* Stack items vertically */
   align-items: flex-start; /* Align items to the left */  
   justify-content: flex-start; /* Align items to the top */
-  margin-right: 470px;
+  margin-right: 570px;
   gap: 1px;
 }
 
@@ -433,5 +435,6 @@ strong p.additional-text {
   height: 100%;
   transition: width 0.05s ease-out; 
 }
+
 
 

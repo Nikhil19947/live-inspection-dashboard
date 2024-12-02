@@ -292,7 +292,8 @@ def generate(part_id, part_name, part_station):
     # Return defect list and acceptance status without paths
     return defect_list, is_accepted
 
-BASE_URL = r'C:\Users\Skanda J\Downloads\BE_Dev\BE_Dev'
+BASE_URL = r'C:\Users\vaish\internship\Intern\live-inspection-dashboard\inspections'
+
 def save_to_db(part_id, input_paths, pred_paths, defect_list, is_accepted, station, part):
     try:
         # Establish MySQL connection
@@ -300,7 +301,7 @@ def save_to_db(part_id, input_paths, pred_paths, defect_list, is_accepted, stati
             host='localhost',        # Your MySQL host
             database='dummydb',      # Your database name
             user='root',             # Your MySQL username
-            password='root_pass813'  # Your MySQL password
+            password='root'  # Your MySQL password
         )
 
         if connection.is_connected():
