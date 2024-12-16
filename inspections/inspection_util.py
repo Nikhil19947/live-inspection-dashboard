@@ -111,7 +111,6 @@ def start_process_util():
 datadrive_path = "inspections\inspection_images"
 model_path = 'yolov8s-oiv7.pt'
 
-
 class GM:
     def __init__(self):
         self.weights_path = ''

@@ -37,7 +37,6 @@ const InspectionPage = () => {
         return Array.from({ length: end - start + 1 }, (_, index) => start + index);
     };
 
-
     return (
         <div style={{ display: 'flex' }}>
             <nav class="navbar bg-body-tertiary fixed-top" style={{ width: '5px' }}>
@@ -127,7 +126,6 @@ const InspectionPage = () => {
                                     className="form-control"
                                     style={{ marginLeft: '10px', width: '200px', borderRadius: '8px' }}
                                 />
-
                                 <a href="/add_user"><button className="btn btn-primary" style={{ padding: '8px 15px', borderRadius: '8px' }}>
                                     <i className="fas fa-user-plus" style={{ marginRight: '5px' }}></i> Add New User
                                 </button></a>

@@ -31,7 +31,6 @@ app.use(cors({
 }));
 
 
-
 // MySQL connection
 const db = mysql.createConnection({
   host: 'localhost',
@@ -77,7 +76,7 @@ app.post('/signup', async (req, res) => {
     `;
     await query(queryText, [username, hashedPassword, first_name, last_name, phoneNumber, role, shift, reportingManager]);
 
-    res.status(201).json({ message: 'User created successfully' });
+    res.status(201).json({ message: 'User created successfully'});
   } catch (err) {
     console.error('Error inserting user:', err);
 
@@ -113,6 +112,7 @@ app.post('/login', async (req, res) => {
 
     const token = jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
     res.status(200).json({ token });
+    
   } catch (err) {
     console.error('Error logging in user:', err);
     res.status(500).json({ message: 'Error logging in user' });
@@ -241,8 +241,6 @@ app.delete('/api/station/:id', (req, res) => {
       return res.status(200).json({ message: 'Station deleted successfully' });
   });
 });
-
-
 
 const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => {

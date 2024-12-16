@@ -132,7 +132,6 @@ app.get('/api/get_analytics', async (req, res) => {
     }
 });
 
-
 // Route for parts
 app.get('/api/parts', async (req, res) => {
     try {
@@ -165,6 +164,7 @@ app.delete('/api/parts/:id', (req, res) => {
         return res.status(200).json({ message: 'Part deleted successfully' });
     });
 });
+
 
 app.get('/api/station', async (req, res) => {
     try {

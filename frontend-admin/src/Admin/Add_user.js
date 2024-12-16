@@ -17,12 +17,16 @@ const AddUserPage = () => {
     const [successMessage, setSuccessMessage] = useState('');
     const [image, setImage] = useState(null);
 
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@factree\.ai$/;
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         setFormData({
             ...formData,
             [name]: value
         });
+        
+        setErrorMessage('');
     };
 
     const handleImageChange = (e) => {
@@ -36,6 +40,11 @@ const AddUserPage = () => {
         e.preventDefault();
         setErrorMessage('');
         setSuccessMessage('');
+
+        if (!emailRegex.test(formData.username)) {
+            setErrorMessage('Please use a valid @factree.ai email address.');
+            return;
+        }
 
         try {
             const response = await axios.post('http://localhost:5001/signup', formData, {
@@ -127,13 +136,18 @@ const AddUserPage = () => {
                                 <div className="col-md-6">
                                     <label className="labels">Email ID</label>
                                     <input 
-                                        type="text" 
+                                        type="email" 
                                         className="form-control" 
-                                        placeholder="email id" 
+                                        placeholder="email id (@factree.ai)" 
                                         name="username"
                                         value={formData.username}
                                         onChange={handleInputChange}
                                     />
+                                    {formData.username && !emailRegex.test(formData.username) && (
+                                        <div className="text-danger mt-1">
+                                            Please use a valid @factree.ai email address
+                                        </div>
+                                    )}
                                 </div>
                                 <div className="col-md-6">
                                     <label className="labels">Password</label>

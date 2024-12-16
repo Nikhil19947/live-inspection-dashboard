@@ -93,7 +93,6 @@ def get_details():
             connection.close()
 
 
-
 @app.route('/inspect_func')
 def inspect_func():
     capture()
@@ -113,6 +112,7 @@ def video_feed():
     return Response(generate(part_id=part_id, part_name = part_name, part_station = part_station), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
+#Give path the inspections to the base directory and change baseUrl to get image
 BASE_DIRECTORY = r'C:\Users\vaish\internship\Intern\live-inspection-dashboard\inspections'
 
 
@@ -250,8 +250,6 @@ def start_inspect():
     global inspect
     inspect = True  # Set the inspect flag to True
     return jsonify({"status": "Inspection started successfully"}), 200
-
-
 @app.route('/recognized_text', methods=['GET'])
 def get_recognized_text():
     """Route to serve recognized text."""
