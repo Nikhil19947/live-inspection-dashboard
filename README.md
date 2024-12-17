@@ -158,10 +158,10 @@ CREATE TABLE results (
 	id VARCHAR(36) PRIMARY KEY,
 	part_id VARCHAR(36),
 	input_frame_path text,
-    inference_frame_path text,
-    defect_list text,
+    	inference_frame_path text,
+    	defect_list text,
 	is_accepted varchar(50),
 	timestamp DATETIME,
-    station varchar(50),
+    	station varchar(50),
 	part varchar(50));
 ```
