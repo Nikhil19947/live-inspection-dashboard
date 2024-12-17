@@ -163,5 +163,6 @@ CREATE TABLE results (
 	is_accepted varchar(50),
 	timestamp DATETIME,
     	station varchar(50),
-	part varchar(50));
+	part varchar(50)
+);
 ```
