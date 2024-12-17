@@ -30,6 +30,10 @@ def add_cors_headers(response):
     response.headers['Access-Control-Allow-Methods'] = 'GET,PUT,POST,DELETE,OPTIONS'
     return response
 
+@app.route('/basler_feed', methods=['GET'])
+def basler_feed():
+    return Response(basler_camera_stream(), mimetype='multipart/x-mixed-replace; boundary=frame')
+
 
 @app.route('/set_id')
 def set_id():
@@ -44,6 +48,7 @@ def get_details():
     global in_id
     if not in_id:
         return jsonify({'error': 'part_id is required'}), 400
+
 
     try:
         # Connect to the MySQL database
@@ -105,16 +110,28 @@ def video_feed():
     part_name = request.args.get('part_name')
     part_station = request.args.get('station')
 
+    # Choose for type camera feed
+    camera_type = request.args.get('camera_type')
+
     if not part_id:
         return "Error: part_id is required!", 400
+    
+    # Check if the camera type is 'webcam' or 'basler'
+    if camera_type == 'webcam':
+        return Response(camera_web(part_id=part_id, part_name=part_name, part_station=part_station), mimetype='multipart/x-mixed-replace; boundary=frame')
+    
+    elif camera_type == 'basler':  # Added condition for basler camera type
+        return Response(generate(part_id=part_id, part_name=part_name, part_station=part_station), mimetype='multipart/x-mixed-replace; boundary=frame')
+    
+    else:
+        return "Error: Invalid camera type!", 400  # Handle invalid camera type
 
-    # Pass the part_id to the generate function or wherever you need it
-    return Response(generate(part_id=part_id, part_name = part_name, part_station = part_station), mimetype='multipart/x-mixed-replace; boundary=frame')
 
 
+############################################################################################3
 #Give path the inspections to the base directory and change baseUrl to get image
 BASE_DIRECTORY = r'C:\Users\vaish\internship\Intern\live-inspection-dashboard\inspections'
-
+########################################################################################3####
 
 @app.route('/get_images', methods=['GET'])
 def get_images():
@@ -250,6 +267,7 @@ def start_inspect():
     global inspect
     inspect = True  # Set the inspect flag to True
     return jsonify({"status": "Inspection started successfully"}), 200
+
 @app.route('/recognized_text', methods=['GET'])
 def get_recognized_text():
     """Route to serve recognized text."""

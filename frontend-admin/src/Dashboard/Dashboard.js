@@ -12,6 +12,8 @@ import { replace } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom'; // Add this import at the top of the file
 
 function LiveInspection() {
+  const [cameraType, setCameraType] = useState('');
+
   const [cameraFeeds, setCameraFeeds] = useState(Array(6).fill(null));
   const [isStreaming, setIsStreaming] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -28,6 +30,32 @@ function LiveInspection() {
   const [showWarning, setShowWarning] = useState(false);
   const [statusColor, setStatusColor] = useState('EA80FC'); // Purple as default
   const [isCameraLoading, setIsCameraLoading] = useState(false); // New state for camera loading
+  const [isCameraDisconnected, setIsCameraDisconnected] = useState(false);
+  const [selectedCamera, setSelectedCamera] = useState(''); // Default camera type is Basler
+
+  const handleCameraChange = (event) => {
+    const selectedCamera = event.target.value;
+    setCameraType(selectedCamera);
+
+    // // Simulate camera disconnection or reconnection based on selected camera
+    if (selectedCamera === "basler") {
+      setIsCameraDisconnected(true); // Simulate camera disconnection for Basler
+    } else {
+      setIsCameraDisconnected(false); // Hide warning for other camera types
+      setShowWarning(false);
+    }
+  };
+  
+  const handleCloseWarning = () => {
+    setShowWarning(false);
+  };
+
+  const handleClosebasselerWarning = () => {
+    setIsCameraDisconnected(false); // Ensure the camera disconnected state is reset
+    setShowWarning(false); // Close the warning
+  };
+ 
+  //Cameras selection
   const navigate = useNavigate();
 
   const thumbnailsRefs = useRef(Array(6).fill(null));
@@ -51,8 +79,29 @@ function LiveInspection() {
       });
   }, []);
 
-  const handleStart = async () => {
+
+  //User cannot go back without logout.
+  useEffect(() => {
+    const disableBackButton = () => {
+      console.log("Disabling back button");
+      window.history.pushState(null, '', window.location.href);
+      window.onpopstate = function (event) {
+        console.log("Back button pressed");
+        window.history.go(1);
+      };
+    };
   
+    disableBackButton();
+  
+    return () => {
+      console.log("Cleaning up");
+      window.onpopstate = null;
+    };
+  }, []);
+
+  
+  const handleStart = async () => {
+    //
     // Check if both product and station are selected
     if (!selectedProduct || !selectedStation) {
       setShowWarning(true);
@@ -76,7 +125,7 @@ function LiveInspection() {
       const data = await response.json();
 
       // Set video source with part_id, selectedProduct, and selectedStation included in the URL
-      setVideoSrc(`http://127.0.0.1:5000/video_feed?part_id=${newUniquePartId}&part_name=${selectedProduct}&station=${selectedStation}`);
+      setVideoSrc(`http://127.0.0.1:5000/video_feed?part_id=${newUniquePartId}&part_name=${selectedProduct}&station=${selectedStation}&camera_type=${cameraType}`);
       setIsStreaming(true);
     } catch (error) {
       console.error("Error starting process: ", error);
@@ -88,9 +137,8 @@ function LiveInspection() {
     }
   };
 
-  const handleCloseWarning = () => {
-    setShowWarning(false);
-  };
+  
+
 
   const handleStop = async () => {
     try {
@@ -245,6 +293,15 @@ function LiveInspection() {
     navigate('/', { replace:true });
   };
 
+  // const handleCameraChange = (e) => {
+  //   setCameraType(e.target.value);
+  //   if (e.target.value !== 'basler') {
+  //     setShowWarning(true); // Show warning if not using webcam
+  //   } else {
+  //     alert('Warning: The selected camera connection requires hardware connection.'); // Popup alert for webcam
+  //   }
+  // };
+
   return (
     <div className="live-inspection-page">
       {/* Live Inspection Header */}
@@ -283,6 +340,47 @@ function LiveInspection() {
                   </option>
                 ))}
               </select>
+            
+              <div>
+                <select
+                  value={cameraType}
+                  onChange={handleCameraChange}
+                  style={{ marginBottom: '10px' }}
+                >
+                  <option value="" disabled>
+                    Select Camera
+                  </option>
+                  <option value="webcam">Webcam</option>
+                  <option value="basler">Basler</option>
+                  <option value="fileExplorer">File Explorer</option>
+                </select>
+                {isCameraDisconnected &&(
+                  <div className="popup-card" style={{ 
+                    backgroundColor: 'white', 
+                    color: 'black', 
+                    padding: '20px', 
+                    borderRadius: '10px', 
+                    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', 
+                    position: 'absolute', 
+                    top: '50%', 
+                    left: '50%', 
+                    transform: 'translate(-50%, -50%)', 
+                    zIndex: 1000 
+                  }}>
+                    <h3>⚠️ Warning!</h3>
+                    <p>
+                      Warning: Please reconnect or check the
+                      connection. The selected camera connection requires hardware
+                      connectivity.
+                    </p>
+                    <button onClick={handleClosebasselerWarning} className="btn btn-primary">
+                      OK
+                    </button>
+                  </div>
+                )}
+              </div>
+                                            
+
             </div>
             {/* Controls buttons */}
             <div className="controls-buttons">
@@ -305,6 +403,12 @@ function LiveInspection() {
                 Loading...
               </button>
             )}
+            {/* Add a span tag for the connection status */}
+            {!isCameraDisconnected && cameraType && (
+                  <span style={{ color: 'green', marginTop: '10px', display: 'block' }}>
+                    Camera is connected.
+                  </span>
+                )}
           </div>
         </div>
         {/* Inspector, Batch ID, Camera Health, PLC Health */}
@@ -355,6 +459,7 @@ function LiveInspection() {
             )}
               
           </div>
+
         </div>
 
         <div className="camera-thumbnails">
@@ -552,16 +657,16 @@ function LiveInspection() {
         </div>
       </div>
       {showWarning && (
-      <div className="warning-overlay">
-        <div className="warning-content">
-          <h3>Warning!</h3>
-          <p>Please select both Product and Station before starting.</p>
-          <button onClick={handleCloseWarning} className="btn btn-primary">
-            OK
-          </button>
+        <div className="warning-overlay">
+          <div className="warning-content">
+            <h3>Warning!</h3>
+            <p>Please select both Product and Station before starting.</p>
+            <button onClick={handleCloseWarning} className="btn btn-primary">
+              OK
+            </button>
+          </div>
         </div>
-      </div>
-    )}
+      )}
     </div>
   );
 }

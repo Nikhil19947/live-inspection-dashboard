@@ -3,7 +3,7 @@ body, html {
   height: 100vh;
   overflow: hidden;
   box-sizing: border-box;
-  background-color: #858796;
+  background-color: #f8f9fa;
   
 }
 
@@ -16,7 +16,7 @@ body, html {
   font-weight: bold;
   padding: 0px;
   margin-left: 20px;
-  background-color: #ffffff;
+  background-color: #f8f9fa;
   margin-top: 5px;
   width: 90%; /* Ensure it takes the full width */
 }
@@ -57,7 +57,7 @@ body, html {
   justify-content: space-between; /* Space out the items in the bar */
   align-items: center; /* Center vertically */
   padding: 0px; /* Add some padding */
-  background-color: #ffffff; /* Background color */
+  background-color: #f8f9fa; /* Background color */
   border-radius: 0; /* No border radius */
   width: 100%; /* Full width */
 }
@@ -156,6 +156,7 @@ body, html {
   gap: 20px;
   height:90px;
 }
+
 
 .status-info, .health-statuses {
   background-color: #f8f9fa; /* Light background color */
@@ -371,7 +372,7 @@ th {
 
 
 .status-message.rejected {
-  background-color: #f8d7da; /* Light red background */
+  background-color: #f4f5f6; /* Light red background */
   color: #721c24; /* Dark red text */
 }
 
@@ -502,3 +503,42 @@ strong p.additional-text {
   min-width: 100px;
 }
 
+.warning-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* Transparent black background */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000; /* Make sure it's above other content */
+}
+
+.warning-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  max-width: 400px;
+  width: 100%;
+}
+
+.warning-content h3 {
+  color: red;
+}
+
+.warning-content button {
+  margin-top: 10px;
+  padding: 8px 15px;
+  background-color: blue;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.warning-content button:hover {
+  background-color: darkblue;
+}

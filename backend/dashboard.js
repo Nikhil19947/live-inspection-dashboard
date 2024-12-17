@@ -121,6 +121,7 @@ app.get('/api/summary', async (req, res) => {
 });
 
 
+//results table is append every time a new part is inspected with the part_id, is_accepted, station and time stamp.
 app.get('/api/get_analytics', async (req, res) => {
     const sql = `
         SELECT results.id, results.part, results.is_accepted, results.timestamp, results.station FROM results`;
