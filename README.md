@@ -113,15 +113,15 @@ CREATE TABLE products (
 
 ```sql
 CREATE TABLE inspections (
-    id VARCHAR(45) PRIMARY KEY,
-    part_id VARCHAR(255),
-    input_frame_path TEXT,
-    inference_frame_path TEXT,
-    defect_list TEXT,
-    is_accepted TINYINT(1),
-    timestamp DATETIME,
-    station VARCHAR(45),
-    part VARCHAR(45)
+ id VARCHAR(45) PRIMARY KEY,
+ part_id VARCHAR(255),
+ input_frame_path TEXT,
+ inference_frame_path TEXT,
+ defect_list TEXT,
+ is_accepted TINYINT(1),
+ timestamp DATETIME,
+ station VARCHAR(45),
+ part VARCHAR(45)
 );
 ```
 
@@ -155,15 +155,13 @@ CREATE TABLE users (
 
 ```sql
 CREATE TABLE results (
-    part_id INT PRIMARY KEY,
-    part_description VARCHAR(45),
-    part_number INT,
-    model_number INT,
-    operator VARCHAR(45),
-    shift VARCHAR(45),
-    station VARCHAR(45),
-    batch VARCHAR(45),
-    status VARCHAR(45),
-    timestamp VARCHAR(45)
-);
+	id VARCHAR(36) PRIMARY KEY,
+	part_id VARCHAR(36),
+	input_frame_path text,
+    inference_frame_path text,
+    defect_list text,
+	is_accepted varchar(50),
+	timestamp DATETIME,
+    station varchar(50),
+	part varchar(50));
 ```
