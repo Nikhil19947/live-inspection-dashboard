@@ -1,5 +1,7 @@
 from ultralytics import YOLO
 import cv2
+from pypylon import pylon
+import numpy as np 
 import bson
 from flask import Flask, Response, send_file
 import os
@@ -59,6 +61,30 @@ class GM:
     def check_kanban(self, defect_list):
         return "Rejected" if defect_list else "Accepted"
 
+camera = pylon.InstantCamera(pylon.TlFactory.GetInstance().CreateFirstDevice())
+
+#Start camera
+camera.Open()
+camera.StartGrabbing(pylon.GrabStrategy_LatestImageOnly) 
+converter = pylon.ImageFormatConverter()
+
+#Convert to OpenCv BGR format 
+converter.OutputPixelFormat = pylon.PixelType_BGR8packed
+converter.OutputBitAlignment = pylon.OutputBitAlignment_MsbAligned
+
+while camera.IsGrabbing():   
+    grabResult = camera.RetrieveResult(5000, pylon.TimeoutHandling_ThrowException) 
+    if grabResult.GrabSucceeded():   
+        image = converter.Convert(grabResult)   
+        img = image.GetArray() 
+        
+        cv2.imshow("Basler Feed", img)
+    grabResult.Release()   
+    if cv2.waitKey(1) & 0xFF == ord('q'):   
+        break
+camera.StopGrabbing()   
+camera.Close()   
+cv2.destroyAllWindows()
 
 # Initialize model
 gm1 = GM()

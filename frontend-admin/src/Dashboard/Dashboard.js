@@ -4,8 +4,16 @@ import logo from '../assets/FactreeLogo.png';
 import name from '../assets/Factree Writing.png'
 import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
+import logout from'../assets/logout.png'
+// import { display } from 'html2canvas/dist/types/css/property-descriptors/display';
+import 'bootstrap-icons/font/bootstrap-icons.css';
+import differenceInHours from 'date-fns/differenceInHours';
+import { replace } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'; // Add this import at the top of the file
 
 function LiveInspection() {
+  const [cameraType, setCameraType] = useState('');
+
   const [cameraFeeds, setCameraFeeds] = useState(Array(6).fill(null));
   const [isStreaming, setIsStreaming] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -18,11 +26,41 @@ function LiveInspection() {
   const [parts, setParts] = useState([]);
   const [stations, setStations] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState('');
-  const [selectedStation, setSelectedStation] = useState('')
+  const [selectedStation, setSelectedStation] = useState('');
+  const [showWarning, setShowWarning] = useState(false);
+  const [statusColor, setStatusColor] = useState('EA80FC'); // Purple as default
+  const [isCameraLoading, setIsCameraLoading] = useState(false); // New state for camera loading
+  const [isCameraDisconnected, setIsCameraDisconnected] = useState(false);
+  const [selectedCamera, setSelectedCamera] = useState(''); // Default camera type is Basler
+
+  const handleCameraChange = (event) => {
+    const selectedCamera = event.target.value;
+    setCameraType(selectedCamera);
+
+    // // Simulate camera disconnection or reconnection based on selected camera
+    if (selectedCamera === "basler") {
+      setIsCameraDisconnected(true); // Simulate camera disconnection for Basler
+    } else {
+      setIsCameraDisconnected(false); // Hide warning for other camera types
+      setShowWarning(false);
+    }
+  };
+  
+  const handleCloseWarning = () => {
+    setShowWarning(false);
+  };
+
+  const handleClosebasselerWarning = () => {
+    setIsCameraDisconnected(false); // Ensure the camera disconnected state is reset
+    setShowWarning(false); // Close the warning
+  };
+ 
+  //Cameras selection
+  const navigate = useNavigate();
 
   const thumbnailsRefs = useRef(Array(6).fill(null));
   useEffect(() => {
-    // Fetch parts data
+    // Fetch parts dataut
     axios.get('http://localhost:5002/api/parts')
       .then(response => {
         setParts(response.data); // Assuming response.data contains an array of parts
@@ -41,10 +79,38 @@ function LiveInspection() {
       });
   }, []);
 
-  const handleStart = async () => {
-    const newUniquePartId = uuidv4();  // Generate a new unique part ID
-    setUniquePartId(newUniquePartId);
 
+  //User cannot go back without logout.
+  useEffect(() => {
+    const disableBackButton = () => {
+      console.log("Disabling back button");
+      window.history.pushState(null, '', window.location.href);
+      window.onpopstate = function (event) {
+        console.log("Back button pressed");
+        window.history.go(1);
+      };
+    };
+  
+    disableBackButton();
+  
+    return () => {
+      console.log("Cleaning up");
+      window.onpopstate = null;
+    };
+  }, []);
+
+  
+  const handleStart = async () => {
+    //
+    // Check if both product and station are selected
+    if (!selectedProduct || !selectedStation) {
+      setShowWarning(true);
+      setIsLoading(false);
+      return;
+    };
+    const newUniquePartId = uuidv4();
+    setUniquePartId(newUniquePartId);
+    setIsCameraLoading(true); // Set camera loading to true when starting
     try {
       const response = await fetch('http://127.0.0.1:5000/start_process', {
         method: 'POST',
@@ -59,12 +125,20 @@ function LiveInspection() {
       const data = await response.json();
 
       // Set video source with part_id, selectedProduct, and selectedStation included in the URL
-      setVideoSrc(`http://127.0.0.1:5000/video_feed?part_id=${newUniquePartId}&part_name=${selectedProduct}&station=${selectedStation}`);
+      setVideoSrc(`http://127.0.0.1:5000/video_feed?part_id=${newUniquePartId}&part_name=${selectedProduct}&station=${selectedStation}&camera_type=${cameraType}`);
       setIsStreaming(true);
     } catch (error) {
       console.error("Error starting process: ", error);
+    } finally {
+      // Set a timeout to reset loading state after 18 seconds
+      setTimeout(() => {
+        setIsCameraLoading(false); // Reset camera loading state
+      }, 8000); // 8000 milliseconds = 8 seconds
     }
   };
+
+  
+
 
   const handleStop = async () => {
     try {
@@ -154,7 +228,6 @@ function LiveInspection() {
 
   const handleCheck = async () => {
     setIsLoading(true);
-
     try {
       // Start inspection
       fetch(`http://127.0.0.1:5000/inspect_func`, {
@@ -175,8 +248,59 @@ function LiveInspection() {
   };
 
   const acceptanceStatus = accept && accept.length > 0 ? accept[0] : null;
-  const acceptanceLabel = acceptanceStatus && acceptanceStatus.is_accepted ? 'Accepted' : 'Rejected';
-  const statusColor = acceptanceStatus && acceptanceStatus.is_accepted === 1 ? 'green' : 'red';
+  const acceptanceLabel = acceptanceStatus === null ? 'WAITING FOR INSPECTION' : acceptanceStatus.is_accepted === 1 ? 'ACCEPTED' : 'REJECTED';
+ // Add this useEffect to handle color changes
+  useEffect(() => {
+    if (acceptanceStatus === null) {
+      setStatusColor('#EA80FC'); // Purple for WAITING
+    } else if (acceptanceStatus.is_accepted === 1) {
+      setStatusColor('#64FFDA'); // Green for ACCEPTED
+    } else {
+      setStatusColor('#FF5252'); // Red for REJECTED
+    }
+  }, [acceptanceStatus]);
+
+  const [metrologyData, setMetrologyData] = useState(
+    Array(20).fill({
+      measured: 0,
+      isPass: null, // null to indicate no result yet
+    })
+  );
+
+  const handleInspect = () => {
+    // Update the metrology data with new random values and pass/fail logic
+    const updatedData = metrologyData.map(() => {
+      const randomMeasured = parseFloat((Math.random() * 100).toFixed(2)); // Random measured value
+      const isPass = Math.abs(randomMeasured - 50) <= 2; // Check if within 50.00 ±2 specification
+      return {
+        measured: randomMeasured,
+        isPass,
+      };
+    });
+    setMetrologyData(updatedData); // Update state with new data
+  };
+  
+  const handleBoth = () => {
+    handleCheck(); // Ensure this is a function and properly defined
+    handleInspect(); // Ensure this is a function and properly defined
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("authToken");
+    sessionStorage.clear();
+
+    //Use navigate to redirect to the login page
+    navigate('/', { replace:true });
+  };
+
+  // const handleCameraChange = (e) => {
+  //   setCameraType(e.target.value);
+  //   if (e.target.value !== 'basler') {
+  //     setShowWarning(true); // Show warning if not using webcam
+  //   } else {
+  //     alert('Warning: The selected camera connection requires hardware connection.'); // Popup alert for webcam
+  //   }
+  // };
 
   return (
     <div className="live-inspection-page">
@@ -186,8 +310,12 @@ function LiveInspection() {
           <img src={logo} alt="Factree Logo" />
           <img src={name} alt="Factree" />
         </div>
-        <h1 className="live-inspection-title">Live Inspection</h1>
+        <h1 className="live-inspection-title" style={{fontWeight:'bold', fontSize: '36px', color: 'darkslategray'}}>Live Inspection</h1>
+        <button onClick={handleLogout} style={{height:'40px', fontSize:'17px', marginRight:'-110px', borderRadius:'25px'}} className="logout-button">
+          <img style={{height:'35px', borderRadius:'200px'}} src={logout}></img>
+        </button>
       </header>
+   
       {/* Top bar for selection and controls */}
       <div className="top-bar">
         <div className="factree-section">
@@ -212,19 +340,75 @@ function LiveInspection() {
                   </option>
                 ))}
               </select>
+            
+              <div>
+                <select
+                  value={cameraType}
+                  onChange={handleCameraChange}
+                  style={{ marginBottom: '10px' }}
+                >
+                  <option value="" disabled>
+                    Select Camera
+                  </option>
+                  <option value="webcam">Webcam</option>
+                  <option value="basler">Basler</option>
+                  <option value="fileExplorer">File Explorer</option>
+                </select>
+                {isCameraDisconnected &&(
+                  <div className="popup-card" style={{ 
+                    backgroundColor: 'white', 
+                    color: 'black', 
+                    padding: '20px', 
+                    borderRadius: '10px', 
+                    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)', 
+                    position: 'absolute', 
+                    top: '50%', 
+                    left: '50%', 
+                    transform: 'translate(-50%, -50%)', 
+                    zIndex: 1000 
+                  }}>
+                    <h3>⚠️ Warning!</h3>
+                    <p>
+                      Warning: Please reconnect or check the
+                      connection. The selected camera connection requires hardware
+                      connectivity.
+                    </p>
+                    <button onClick={handleClosebasselerWarning} className="btn btn-primary">
+                      OK
+                    </button>
+                  </div>
+                )}
+              </div>
+                                            
+
             </div>
             {/* Controls buttons */}
             <div className="controls-buttons">
-              <button type="button" className="btn btn-primary" onClick={handleStart} disabled={isStreaming}>START</button>
-              <button type="button" className="btn btn-primary" onClick={handleCheck} disabled={!isStreaming}>INSPECT</button>
-              <button type="button" className="btn btn-danger" onClick={handleStop} disabled={!isStreaming}>STOP</button>
-            </div>
-            {isLoading && (
-            <button class="btn btn-primary" type="button" disabled style={{ marginLeft: '60px' }}>
-              <span class="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
-              Loading...
+            <button type="button" className={`btn start-btn ${isStreaming ? 'btn-success' : ''}`} onClick={handleStart} disabled={isStreaming}>
+              {isCameraLoading ? 'START' : 'START'}
             </button>
+           
+            <button type="button" className="btn inspect-btn" onClick={handleBoth} disabled={!isStreaming}>CHECK</button>
+            <button type="button" className="btn btn-danger" onClick={handleStop} disabled={!isStreaming}>STOP</button>
+            </div>
+            {isCameraLoading && (
+              <span className="progress-loader" type='button' disabled style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '20px', marginLeft:'70px',  }}>
+                <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                <span style={{ marginLeft: '10px' }}>Starting Camera ON...</span>
+              </span>
             )}
+            {isLoading && (
+              <button className="btn btn-inspect" type="button" disabled style={{ marginLeft: '60px' }}>
+                <span className="spinner-grow spinner-grow-sm" role="status" aria-hidden="true"></span>
+                Loading...
+              </button>
+            )}
+            {/* Add a span tag for the connection status */}
+            {!isCameraDisconnected && cameraType && (
+                  <span style={{ color: 'green', marginTop: '10px', display: 'block' }}>
+                    Camera is connected.
+                  </span>
+                )}
           </div>
         </div>
         {/* Inspector, Batch ID, Camera Health, PLC Health */}
@@ -253,18 +437,29 @@ function LiveInspection() {
             </div>
           </div>
         </div>
-
-
       </div>
 
       {/* Main inspection area */}
       <div className="main-inspection-area">
         {/* Camera and defect section */}
         <div className="camera-feed">
-          <strong><span>LIVE</span></strong>
-          <div className="camera-header">
-            <img src={videoSrc} style={{ width: '700px', height: '350px' }} />
+          <strong style={{ color: isStreaming ? 'green' : 'inherit' }}>
+            <span>LIVE</span>
+            <div style={{ display: 'inline-block', marginLeft: '5px' }}>
+              {isStreaming ? <i className="bi bi-camera-video-fill"></i> : <i className="bi bi-camera-video-off"></i>}
+            </div>
+          </strong>
+          
+          <div className="camera-header" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          
+            {!videoSrc ? ( // Check if videoSrc is not available
+              <i className="bi bi-camera-video-off" style={{ fontSize: '250px', color: '#000000', width: '700px', height: '1200px', display: 'block', marginLeft: '250px' }}></i> // Large icon
+            ) : (
+              <img src={videoSrc} style={{ width: '750px', height: '368px', objectFit: 'fill' }} />
+            )}
+              
           </div>
+
         </div>
 
         <div className="camera-thumbnails">
@@ -278,12 +473,15 @@ function LiveInspection() {
                     src={imageUrls[index]}
                     alt={`Image ${index + 1}`}
                     className="image-box-img"
-                    style={{ width: '131px', marginTop: '10px' }}
+                    style={{ width: '182px', height: '125px', marginTop: '1px', 
+                      objectFit:'contain'// the image keeps its aspect ratio, but is resized to fit within the given dimension:
+                     }}
                   />
                 ) : (
-                  <div className="placeholder" style={{ width: '131px', height: '110px', backgroundColor: '#e0e0e0' }}>
-                    {/* Optionally, you can add text or an icon to indicate an empty space */}
-                    <span style={{ textAlign: 'center', display: 'block', lineHeight: '131px' }}>No Image</span>
+                  <div className="placeholder" style={{ width: '179px', height: '127px', backgroundColor: '#EA80FC' }}>
+                    {/* Display the camera video off icon when no image is available */}
+                    <i className="bi bi-camera" style={{ fontSize: '50px', color: '#5000FF'}}></i>
+                    <span style={{ textAlign: 'center', display: 'block', lineHeight: '50px' }}>No Inspection</span>
                   </div>
                 )}
               </div>
@@ -343,8 +541,6 @@ function LiveInspection() {
             </div>
           </div>
 
-
-
           {/* Metrology table */}
           <div className="metrology">
             <h2 style={{ marginTop: '5px' }}>Metrology</h2>
@@ -359,16 +555,20 @@ function LiveInspection() {
                   </tr>
                 </thead>
                 <tbody>
-                  {['Height', 'Width', 'Dia'].map((parameter, i) => (
-                    <tr key={i}>
-                      <td>{parameter}</td>
-                      <td>{(Math.random() * 100).toFixed(2)} mm</td>
-                      <td>50.00 ±2</td>
-                      <td className={Math.random() > 0.5 ? 'pass' : 'error'}>
-                        {Math.random() > 0.5 ? '✔' : '✖'}
-                      </td>
-                    </tr>
-                  ))}
+                {['Height', 'Width', 'Dia'].map((parameter, i) => (
+                  <tr key={i}>
+                    <td>{parameter}</td>
+                    <td>{metrologyData[i]?.measured?.toFixed(2) || '0'} mm</td>
+                    <td>50.00 ±2</td>
+                    <td className={metrologyData[i]?.isPass === true ? 'pass' : 'error'}>
+                      {metrologyData[i]?.isPass === null
+                        ? ''
+                        : metrologyData[i]?.isPass
+                        ? '✔'
+                        : '✖'}
+                    </td>
+                  </tr>
+                ))}
                 </tbody>
               </table>
             </div>
@@ -406,52 +606,67 @@ function LiveInspection() {
               </table>
             </div>
           </div>
-
-
         </div>
       </div>
 
       <div className="bottom-section">
-  <div className="bottom-box-wrapper">
-    <div className="bottom-box">
-      {defects.length > 0 ? (
-        defects.map((defect, i) => {
-          const displayText = acceptanceLabel === 'Accepted' ? 'No Defect' : 'Mobile Phone';         
-
-          return (
-            <p key={i} style={{ marginTop:'-10px'}} >
-              Defect: {displayText}
-            </p>
-          );
-        })
-      ) : (
-        <p style={{marginTop:'-10px'}} >Loading defects...</p>
-      )}
-    </div>
-
-
-          <div
+      <div className="bottom-box-wrapper">
+      <div
             style={{
-              color: statusColor,
+              color: 'white',
               fontWeight: 'bold',
-              backgroundColor: statusColor === 'green' ? 'lightgreen' : 'lightcoral',
-              padding: '10px',
+              right:'51px',
+              backgroundColor: statusColor,
+              marginTop: '-65px',
+              marginLeft: '5px',
+              paddingLeft: '56px',
+              paddingRight:'56px',
+              paddingTop:'15px',
+              paddingBottom:'15px',
+              justifyContent: 'center',
+              top:'59px',
               borderRadius: '5px',
               textAlign: 'center',
-              height: '60px',
+              alignItems:'center',
+              height: '70px',
+              width: '755px',
+              // display:'flex',
+           
               fontSize: '25px'
             }}
           >
             {acceptanceLabel}
+            <div className="bottom-box">
+            {defects.length > 0 ? (
+              <p style={{marginTop:'-35px', marginRight:'157px'}} >
+                Defect: {acceptanceLabel === 'ACCEPTED' ? 'No Defect' : 'Mobile Phone'}
+              </p>
+            ) : (
+              <p style={{marginTop:'-35px', marginRight:'157px'}} >Loading defects...</p>
+            )}
+          </div>
+          
           </div>
         </div>
+
+
         <div className="additional-box">
           <strong><p className="additional-text">OCR</p></strong>
           <p className="additional-text">Batch&nbsp;&nbsp;&nbsp;-</p>
           <p className="additional-text">Exp&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-</p>
         </div>
       </div>
-
+      {showWarning && (
+        <div className="warning-overlay">
+          <div className="warning-content">
+            <h3>Warning!</h3>
+            <p>Please select both Product and Station before starting.</p>
+            <button onClick={handleCloseWarning} className="btn btn-primary">
+              OK
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

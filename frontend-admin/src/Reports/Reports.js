@@ -249,10 +249,28 @@ const lastUpdatedTime = latestTimestamp ? format(new Date(latestTimestamp), "yyy
                 <button
                   className="btn btn-primary"
                   onClick={exportToExcel}
-                  style={{ padding: '10px', borderRadius: '5px', height:'43px', width:'200px' }}
-                >
-                  Export to Excel
+                  style={{ 
+                    width: '130px', 
+                    height: '38px', 
+                    position: 'absolute', 
+                    backgroundColor: '#007BFF', 
+                    color: 'white', 
+                    borderRadius: '5px', 
+                    padding: '6px 12px', 
+                    fontSize: '14px', 
+                    fontWeight: 'bold', 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    gap: '5px', 
+                    border: 'none', 
+                    cursor: 'pointer',
+                    marginLeft: '1149px'
+                  }}
+                > 
+                <i className="fa fa-download" style={{ fontSize: '16px' }}></i> 
+                 Export to Excel
                 </button>
+                
               </div>
             </div>
 

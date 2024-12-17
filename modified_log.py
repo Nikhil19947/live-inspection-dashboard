@@ -43,9 +43,6 @@ def register():
     }
    
     
-    
-    
-    
     """
 
 

@@ -49,7 +49,6 @@ const downloadPDF = () => {
   });
 }
 
-
   const handleImageClick = (image) => {
     setSelectedImage(image);
     setShowModal(true);
@@ -125,7 +124,9 @@ const downloadPDF = () => {
         <div style={{ width: '100%' }}>
           <h1 className="live-inspection-title">Detailed View</h1>
           <div className="dropdown" style={{ marginLeft: '1230px', marginBottom: '20px' }}>
-            <button className="btn download-button" style={{ width:'150px', position: 'absolute', backgroundColor: '#007BFF', color: 'white', borderRadius: '5px', padding: '6px 12px', fontSize: '14px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '5px', border: 'none', cursor: 'pointer' }} onClick={downloadPDF}>
+            <button className="btn download-button" style={{ width:'150px', position: 'absolute', backgroundColor: '#007BFF', color: 'white', borderRadius: '5px', 
+              padding: '6px 12px', fontSize: '14px', fontWeight: 'bold', display: 'flex', alignItems: 'center', gap: '5px', border: 'none', cursor: 'pointer' }} 
+              onClick={downloadPDF}>
               <i className="fa fa-download" style={{ fontSize: '16px' }}></i>Download PDF
             </button>
           </div>

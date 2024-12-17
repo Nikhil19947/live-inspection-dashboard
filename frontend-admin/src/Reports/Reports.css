@@ -154,7 +154,8 @@ table th, table td {
     border: 1px solid #ccc;
     border-radius: 4px;
     padding: 8px;
-    width: 250px;
+    width: 190px;
+    margin-left: -16px;
   }
   
   .calendar-icon {
@@ -164,8 +165,8 @@ table th, table td {
   }
   
   .datepicker-input {
-    border: none;
-    width: 100%;
+    border: 390px;
+    width: 131px;
     outline: none;
     padding-left: 8px;
     font-size: 14px;

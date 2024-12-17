@@ -125,6 +125,7 @@ def login():
     }
     """
 
+    
     data = request.get_json()
     username = data.get('username')
     password = data.get('password')
@@ -132,8 +133,9 @@ def login():
 
     if not username or not password:
         return jsonify({"error": "Username and password are required"}), 400
-
+    
     connection = None  # Initialize connection as None
+    
 
     try:
         # Connect to the MySQL database
@@ -188,8 +190,6 @@ def login():
         if connection and connection.is_connected():
             cursor.close()
             connection.close()
-
-
 
 #Logout API
 def logout():

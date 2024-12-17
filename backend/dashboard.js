@@ -34,7 +34,7 @@ app.use(cors({
 const db = mysql.createPool({
     host: 'localhost',        
     user: 'root',            
-    password: 'root_pass813', 
+    password: 'root', 
     database: 'dummydb' 
 });
 
@@ -121,6 +121,7 @@ app.get('/api/summary', async (req, res) => {
 });
 
 
+//results table is append every time a new part is inspected with the part_id, is_accepted, station and time stamp.
 app.get('/api/get_analytics', async (req, res) => {
     const sql = `
         SELECT results.id, results.part, results.is_accepted, results.timestamp, results.station FROM results`;
@@ -131,7 +132,6 @@ app.get('/api/get_analytics', async (req, res) => {
         return res.status(500).json({ error: err.message });
     }
 });
-
 
 // Route for parts
 app.get('/api/parts', async (req, res) => {
@@ -165,6 +165,7 @@ app.delete('/api/parts/:id', (req, res) => {
         return res.status(200).json({ message: 'Part deleted successfully' });
     });
 });
+
 
 app.get('/api/station', async (req, res) => {
     try {
